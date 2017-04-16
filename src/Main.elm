@@ -26,20 +26,28 @@ update msg model =
         Unchoose ->
             { model | chosen = Nothing }
 
+        NewSurveyPlease ->
+            { model | seed = model.seed + 1 }
+
 
 type Msg
     = Noop
     | Choose Int
     | Unchoose
+    | NewSurveyPlease
 
 
 type alias Model =
-    { options : List SurveyOption, chosen : Maybe Int }
+    { seed : Int
+    , options : List SurveyOption
+    , chosen : Maybe Int
+    }
 
 
 model : Model
 model =
-    { options = (List.sortBy .place kitties.options)
+    { seed = 123
+    , options = (List.sortBy .place kitties.options)
     , chosen = Nothing
     }
 
@@ -48,7 +56,10 @@ view : Model -> Html Msg
 view model =
     Html.div
         []
-        [ Html.div [ Attr.class "title" ] [ Html.text "Choose a Kitty" ]
+        [ Html.div [ Attr.class "titleBar" ]
+            [ Html.div [ Attr.class "title" ] [ Html.text "Choose a Kitty" ]
+            , Html.div [ Attr.class "survey-number" ] [ Html.text ("Survey #" ++ (toString model.seed)) ]
+            ]
         , Html.div
             [ Attr.class "allKitties" ]
             [ Html.table []
@@ -56,7 +67,13 @@ view model =
                     (List.map (drawKitty model.chosen) model.options)
                 ]
             ]
+        , Html.div [] [ newSurveyButton ]
         ]
+
+
+newSurveyButton : Html Msg
+newSurveyButton =
+    Html.button [ Html.Events.onClick NewSurveyPlease ] [ Html.text "New Survey" ]
 
 
 drawKitty : Maybe Int -> SurveyOption -> Html Msg

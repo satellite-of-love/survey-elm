@@ -3,8 +3,16 @@ body { font-family: calibri, helvetica, arial, sans-serif;
 text-align: center}
 
 .title {
-    padding: 10px;
     font-size: x-large;
+    display: inline;
+}
+
+.titleBar {
+    padding: 10px;
+}
+
+button {
+    margin: 10px;
 }
 
 td {
@@ -14,6 +22,10 @@ td {
     border: solid thick grey;
 }
 
+.survey-number {
+    float: right;
+}
+
 .chosen {
     background-color: lightgreen;
     border: solid thick green;
@@ -21,7 +33,7 @@ td {
 
 table {
     border-collapse: separate;
-    width: 100%;
+    width: 100vw;
 }
 
 div.allKitties {

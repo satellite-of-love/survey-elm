@@ -4,6 +4,7 @@ import Html exposing (Html)
 import Html.Attributes as Attr
 
 
+main : Program Never Model Msg
 main =
     Html.beginnerProgram
         { model = model
@@ -12,25 +13,36 @@ main =
         }
 
 
+update : Msg -> Model -> Model
 update msg model =
     model
 
 
+type Msg
+    = Noop
+
+
+type alias Model =
+    { options : List SurveyOption, chosen : Maybe Int }
+
+
+model : Model
 model =
-    { options = kitties
+    { options = kitties.options
     , chosen = Nothing
     }
 
 
+view : Model -> Html Msg
 view model =
     Html.div
         []
         [ Html.div [ Attr.class "title" ] [ Html.text "Choose a Kitty" ]
-        , Html.div [ Attr.class "allKitties" ] [ Html.table [] [ Html.tr [] (List.map drawKitty kitties.options) ] ]
+        , Html.div [ Attr.class "allKitties" ] [ Html.table [] [ Html.tr [] (List.map drawKitty model.options) ] ]
         ]
 
 
-drawKitty : SurveyOption -> Html Never
+drawKitty : SurveyOption -> Html Msg
 drawKitty kitty =
     Html.td
         [ Attr.class "kitty"

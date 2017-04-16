@@ -4,9 +4,27 @@ import Html exposing (Html)
 import Html.Attributes as Attr
 
 
-main : Html Never
 main =
-    Html.div []
+    Html.beginnerProgram
+        { model = model
+        , view = view
+        , update = update
+        }
+
+
+update msg model =
+    model
+
+
+model =
+    { options = kitties
+    , chosen = Nothing
+    }
+
+
+view model =
+    Html.div
+        []
         [ Html.div [ Attr.class "title" ] [ Html.text "Choose a Kitty" ]
         , Html.div [ Attr.class "allKitties" ] [ Html.table [] [ Html.tr [] (List.map drawKitty kitties.options) ] ]
         ]

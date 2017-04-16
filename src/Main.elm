@@ -41,7 +41,7 @@ update msg model =
 
         NewSurveyPlease ->
             ( { model | seed = 0, chosen = Nothing }
-            , Random.generate NewRandomSeed (Random.int 1 1000)
+            , Random.generate NewRandomSeed (Random.int 1 10)
             )
 
         SurveyOptionsHaveArrived result ->

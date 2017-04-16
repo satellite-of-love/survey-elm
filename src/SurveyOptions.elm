@@ -1,4 +1,4 @@
-module SurveyOptions exposing (SurveyOptionsResponse, SurveyOption, loadOptions, decodeSurveyOptionsResponse, kitties)
+module SurveyOptions exposing (SurveyOptionsResponse, SurveyOption, loadOptions, decodeSurveyOption, decodeSurveyOptionsResponse, kitties)
 
 import Json.Decode as Decode
 

@@ -12,12 +12,25 @@ type alias SurveyResult =
 
 
 type alias SurveyResultResponse =
-    {}
+    { results : List ( SurveyOption, Int ) }
+
+
+decodeTuple : Decode.Decoder a -> Decode.Decoder b -> Decode.Decoder ( a, b )
+decodeTuple a b =
+    Decode.map2 tupleUp a b
+
+
+tupleUp : a -> b -> ( a, b )
+tupleUp a b =
+    ( a, b )
 
 
 decodeSurveyResultResponse : Decode.Decoder SurveyResultResponse
 decodeSurveyResultResponse =
-    Decode.succeed {}
+    decodeTuple SurveyOptions.decodeSurveyOption Decode.int
+        |> Decode.list
+        |> Decode.field "results"
+        |> Decode.map SurveyResultResponse
 
 
 encodeSurveyOption : SurveyOption -> Encode.Value

@@ -6,6 +6,7 @@ import Html.Events
 import Random
 import Http
 import SurveyOptions exposing (SurveyOption, SurveyOptionsResponse)
+import SurveyResult exposing (SurveyResult, SurveyResultResponse)
 
 
 main : Program Never Model Msg
@@ -40,7 +41,7 @@ update msg model =
 
         NewSurveyPlease ->
             ( { model | seed = 0, chosen = Nothing }
-            , Random.generate NewRandomSeed (Random.int 1 1000)
+            , Random.generate NewRandomSeed (Random.int 1 10)
             )
 
         SurveyOptionsHaveArrived result ->
@@ -60,6 +61,17 @@ update msg model =
                     , Cmd.none
                     )
 
+        Vote options choice ->
+            ( { model | chosen = Nothing, summary = Loading }
+            , sendVote ( options, choice )
+            )
+
+        SurveyResultResponseHasArrived (Ok result) ->
+            ( { model | summary = Success ("Got it: " ++ (toString result)) }, Cmd.none )
+
+        SurveyResultResponseHasArrived (Err boo) ->
+            ( { model | summary = Failure boo }, Cmd.none )
+
 
 type Msg
     = Noop
@@ -68,12 +80,28 @@ type Msg
     | NewSurveyPlease
     | NewRandomSeed Int
     | SurveyOptionsHaveArrived (Result Http.Error SurveyOptionsResponse)
+    | Vote (List SurveyOption) Int
+    | SurveyResultResponseHasArrived (Result Http.Error SurveyResultResponse)
+
+
+
+-- It is strangely difficult to access a list by index
+
+
+findChoiceText : List SurveyOption -> Int -> String
+findChoiceText options place =
+    options
+        |> List.filter (\e -> e.place == place)
+        |> List.head
+        |> Maybe.map .text
+        |> Maybe.withDefault "WAT"
 
 
 type alias Model =
     { seed : Int
     , options : RemoteData Http.Error (List SurveyOption)
     , chosen : Maybe Int
+    , summary : RemoteData Http.Error String
     }
 
 
@@ -82,6 +110,7 @@ init =
     ( { seed = 123
       , options = Loading
       , chosen = Nothing
+      , summary = NotAsked
       }
     , fetchSurveyOptions ( 123, 3 )
     )
@@ -103,6 +132,20 @@ view model =
 
                 Failure boo ->
                     [ Html.td [] [ Html.text ("Failure !!" ++ (toString boo)) ] ]
+
+        summaryContent =
+            case model.summary of
+                NotAsked ->
+                    ""
+
+                Loading ->
+                    "sending vote..."
+
+                Success s ->
+                    s
+
+                Failure boo ->
+                    "Boo! Failure! " ++ (toString boo)
     in
         Html.div
             []
@@ -117,9 +160,21 @@ view model =
                         tableContent
                     ]
                 ]
-            , Html.div [] [ newSurveyButton ]
+            , Html.div [] [ voteButton model, newSurveyButton ]
+            , Html.div [] [ Html.text summaryContent ]
+            , Html.hr [] []
             , Html.div [ Attr.class "footer" ] [ Html.a [ Attr.href "https://github.com/satellite-of-love/survey-elm/tree/gh-pages" ] [ Html.text "Source" ] ]
             ]
+
+
+voteButton : Model -> Html Msg
+voteButton model =
+    case ( model.chosen, model.options ) of
+        ( Just kitteh, Success opts ) ->
+            Html.button [ Html.Events.onClick (Vote opts kitteh) ] [ Html.text "Vote" ]
+
+        _ ->
+            Html.button [ Attr.disabled True ] [ Html.text "Vote" ]
 
 
 newSurveyButton : Html Msg
@@ -151,6 +206,10 @@ drawKitty chosen kitty =
             []
 
 
+
+--- HTTP
+
+
 type RemoteData e a
     = NotAsked
     | Loading
@@ -168,3 +227,18 @@ fetchSurveyOptions ( seed, choices ) =
             Http.get url SurveyOptions.decodeSurveyOptionsResponse
     in
         Http.send SurveyOptionsHaveArrived request
+
+
+sendVote : ( List SurveyOption, Int ) -> Cmd Msg
+sendVote ( options, choice ) =
+    let
+        url =
+            "https://survey.atomist.com/survey-results/vote"
+
+        body =
+            Http.jsonBody (SurveyResult.encodeSurveyResult (SurveyResult options choice))
+
+        request =
+            Http.post url body SurveyResult.decodeSurveyResultResponse
+    in
+        Http.send SurveyResultResponseHasArrived request

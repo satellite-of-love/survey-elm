@@ -67,7 +67,7 @@ update msg model =
             )
 
         SurveyResultResponseHasArrived (Ok result) ->
-            ( { model | summary = Success ("Got it: " ++ (toString result)) }, Cmd.none )
+            ( { model | summary = Success result }, Cmd.none )
 
         SurveyResultResponseHasArrived (Err boo) ->
             ( { model | summary = Failure boo }, Cmd.none )
@@ -101,7 +101,7 @@ type alias Model =
     { seed : Int
     , options : RemoteData Http.Error (List SurveyOption)
     , chosen : Maybe Int
-    , summary : RemoteData Http.Error String
+    , summary : RemoteData Http.Error SurveyResultResponse
     }
 
 
@@ -142,7 +142,7 @@ view model =
                     "sending vote..."
 
                 Success s ->
-                    s
+                    "Got it: " ++ (toString s)
 
                 Failure boo ->
                     "Boo! Failure! " ++ (toString boo)

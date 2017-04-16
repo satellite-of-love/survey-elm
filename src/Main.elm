@@ -5,6 +5,7 @@ import Html.Attributes as Attr
 import Html.Events
 import Random
 import Http
+import SurveyOptions exposing (SurveyOption, SurveyOptionsResponse)
 
 
 main : Program Never Model Msg
@@ -37,6 +38,9 @@ update msg model =
             , Random.generate NewRandomSeed (Random.int 1 1000)
             )
 
+        SurveyOptionsHaveArrived result ->
+            ( model, Cmd.none )
+
 
 type Msg
     = Noop
@@ -44,6 +48,7 @@ type Msg
     | Unchoose
     | NewSurveyPlease
     | NewRandomSeed Int
+    | SurveyOptionsHaveArrived (Result Http.Error SurveyOptionsResponse)
 
 
 type alias Model =
@@ -56,7 +61,7 @@ type alias Model =
 init : ( Model, Cmd Msg )
 init =
     ( { seed = 123
-      , options = Success (List.sortBy .place kitties.options)
+      , options = Success (List.sortBy .place (.options SurveyOptions.kitties))
       , chosen = Nothing
       }
     , Cmd.none
@@ -120,37 +125,20 @@ drawKitty chosen kitty =
             []
 
 
-type alias SurveyOption =
-    { imageLocation : String, text : String, place : Int }
-
-
-type alias SurveyOptionsResponse =
-    { seed : Int, count : Int, options : List SurveyOption }
-
-
-kitties : SurveyOptionsResponse
-kitties =
-    { seed = 123
-    , count = 3
-    , options =
-        [ { imageLocation = "https://c1.staticflickr.com/4/3149/2988746750_4a3dfdee59.jpg"
-          , text = "sink kitties"
-          , place = 1
-          }
-        , { imageLocation = "http://maxpixel.freegreatpicture.com/static/photo/1x/Sweet-Animals-Kitty-Cat-323262.jpg"
-          , text = "kitty licking paw"
-          , place = 3
-          }
-        , { imageLocation = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Computer-kitten.jpg/1024px-Computer-kitten.jpg"
-          , text = "computer kitten"
-          , place = 2
-          }
-        ]
-    }
-
-
 type RemoteData e a
     = NotAsked
     | Loading
     | Failure e
     | Success a
+
+
+fetchSurveyOptions : ( Int, Int ) -> Cmd Msg
+fetchSurveyOptions ( seed, choices ) =
+    let
+        url =
+            "https://survey.atomist.com/survey-options/surveyOptions?seed=" ++ (toString seed) ++ "&count=" ++ (toString choices)
+
+        request =
+            Http.get url SurveyOptions.decodeSurveyOptionsResponse
+    in
+        Http.send SurveyOptionsHaveArrived request

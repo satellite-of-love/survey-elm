@@ -5,9 +5,21 @@ import Html exposing (Html)
 
 main : Html never
 main =
-    Html.text "Hello World"
+    Html.div []
+        [ Html.text "Hello World"
+        , Html.div [] []
+        ]
 
 
+type alias SurveyOption =
+    { imageLocation : String, text : String }
+
+
+type alias SurveyOptionsResponse =
+    { seed : Int, count : Int, options : List SurveyOption }
+
+
+kitties : SurveyOptionsResponse
 kitties =
     { seed = 123
     , count = 3

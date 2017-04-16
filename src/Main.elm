@@ -7,27 +7,28 @@ import Html.Events
 
 main : Program Never Model Msg
 main =
-    Html.beginnerProgram
-        { model = model
+    Html.program
+        { init = init
         , view = view
         , update = update
+        , subscriptions = (\_ -> Sub.none)
         }
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Noop ->
-            model
+            ( model, Cmd.none )
 
         Choose i ->
-            { model | chosen = Just i }
+            ( { model | chosen = Just i }, Cmd.none )
 
         Unchoose ->
-            { model | chosen = Nothing }
+            ( { model | chosen = Nothing }, Cmd.none )
 
         NewSurveyPlease ->
-            { model | seed = model.seed + 1 }
+            ( { model | seed = model.seed + 1 }, Cmd.none )
 
 
 type Msg
@@ -44,12 +45,14 @@ type alias Model =
     }
 
 
-model : Model
-model =
-    { seed = 123
-    , options = (List.sortBy .place kitties.options)
-    , chosen = Nothing
-    }
+init : ( Model, Cmd Msg )
+init =
+    ( { seed = 123
+      , options = (List.sortBy .place kitties.options)
+      , chosen = Nothing
+      }
+    , Cmd.none
+    )
 
 
 view : Model -> Html Msg

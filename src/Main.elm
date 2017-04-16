@@ -4,6 +4,7 @@ import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events
 import Random
+import Http
 
 
 main : Program Never Model Msg
@@ -47,7 +48,7 @@ type Msg
 
 type alias Model =
     { seed : Int
-    , options : List SurveyOption
+    , options : RemoteData Http.Error (List SurveyOption)
     , chosen : Maybe Int
     }
 
@@ -55,7 +56,7 @@ type alias Model =
 init : ( Model, Cmd Msg )
 init =
     ( { seed = 123
-      , options = (List.sortBy .place kitties.options)
+      , options = Success (List.sortBy .place kitties.options)
       , chosen = Nothing
       }
     , Cmd.none
@@ -64,21 +65,30 @@ init =
 
 view : Model -> Html Msg
 view model =
-    Html.div
-        []
-        [ Html.div [ Attr.class "titleBar" ]
-            [ Html.div [ Attr.class "title" ] [ Html.text "Choose a Kitty" ]
-            , Html.div [ Attr.class "survey-number" ] [ Html.text ("Survey #" ++ (toString model.seed)) ]
-            ]
-        , Html.div
-            [ Attr.class "allKitties" ]
-            [ Html.table []
-                [ Html.tr []
-                    (List.map (drawKitty model.chosen) model.options)
+    let
+        tableContent =
+            case model.options of
+                Success options ->
+                    (List.map (drawKitty model.chosen) options)
+
+                _ ->
+                    [ Html.td [] [ Html.text "Wait for it ... " ] ]
+    in
+        Html.div
+            []
+            [ Html.div [ Attr.class "titleBar" ]
+                [ Html.div [ Attr.class "title" ] [ Html.text "Choose a Kitty" ]
+                , Html.div [ Attr.class "survey-number" ] [ Html.text ("Survey #" ++ (toString model.seed)) ]
                 ]
+            , Html.div
+                [ Attr.class "allKitties" ]
+                [ Html.table []
+                    [ Html.tr []
+                        tableContent
+                    ]
+                ]
+            , Html.div [] [ newSurveyButton ]
             ]
-        , Html.div [] [ newSurveyButton ]
-        ]
 
 
 newSurveyButton : Html Msg
@@ -137,3 +147,10 @@ kitties =
           }
         ]
     }
+
+
+type RemoteData e a
+    = NotAsked
+    | Loading
+    | Failure e
+    | Success a

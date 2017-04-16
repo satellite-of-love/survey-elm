@@ -1,0 +1,43 @@
+html,head,body { padding:0; margin:0; }
+body { font-family: calibri, helvetica, arial, sans-serif; 
+text-align: center}
+
+.title {
+    font-size: x-large;
+    display: inline;
+}
+
+.titleBar {
+    padding: 10px;
+}
+
+button {
+    margin: 10px;
+}
+
+td {
+    background: no-repeat center/90%;
+    height: 50vh;
+    /* transition: all 1s ease; <- this is not an improvement */
+    border: solid thick grey;
+}
+
+.survey-number {
+    float: right;
+}
+
+.chosen {
+    background-color: lightgreen;
+    border: solid thick green;
+}
+
+table {
+    border-collapse: separate;
+    width: 100vw;
+}
+
+div.allKitties {
+    white-space: nowrap;
+   width: 100vw;
+}
+

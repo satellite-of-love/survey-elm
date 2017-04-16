@@ -3,6 +3,7 @@ module Main exposing (main)
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events
+import Random
 
 
 main : Program Never Model Msg
@@ -27,8 +28,13 @@ update msg model =
         Unchoose ->
             ( { model | chosen = Nothing }, Cmd.none )
 
+        NewRandomSeed i ->
+            ( { model | seed = i }, Cmd.none )
+
         NewSurveyPlease ->
-            ( { model | seed = model.seed + 1 }, Cmd.none )
+            ( { model | seed = 0 }
+            , Random.generate NewRandomSeed (Random.int 1 1000)
+            )
 
 
 type Msg
@@ -36,6 +42,7 @@ type Msg
     | Choose Int
     | Unchoose
     | NewSurveyPlease
+    | NewRandomSeed Int
 
 
 type alias Model =

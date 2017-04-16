@@ -118,6 +118,7 @@ view model =
                     ]
                 ]
             , Html.div [] [ newSurveyButton ]
+            , Html.div [ Attr.class "footer" ] [ Html.a [ Attr.href "https://github.com/satellite-of-love/survey-elm/tree/gh-pages" ] [ Html.text "Source" ] ]
             ]
 
 

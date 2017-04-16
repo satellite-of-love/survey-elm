@@ -13700,7 +13700,7 @@ var _satellite_of_love$survey_elm$Main$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{seed: 0}),
+						{seed: 0, chosen: _elm_lang$core$Maybe$Nothing}),
 					_1: A2(
 						_elm_lang$core$Random$generate,
 						_satellite_of_love$survey_elm$Main$NewRandomSeed,

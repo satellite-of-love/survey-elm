@@ -1,14 +1,24 @@
 module Main exposing (main)
 
 import Html exposing (Html)
+import Html.Attributes as Attr
 
 
-main : Html never
+main : Html Never
 main =
     Html.div []
-        [ Html.text "Hello World"
-        , Html.div [] []
+        [ Html.div [ Attr.class "title" ] [ Html.text "Choose a Kitty" ]
+        , Html.div [ Attr.class "allKitties" ] [ Html.table [] [ Html.tr [] (List.map drawKitty kitties.options) ] ]
         ]
+
+
+drawKitty : SurveyOption -> Html Never
+drawKitty kitty =
+    Html.td
+        [ Attr.class "kitty"
+        , Attr.style [ ( "background-image", "url(" ++ kitty.imageLocation ++ ")" ) ]
+        ]
+        []
 
 
 type alias SurveyOption =

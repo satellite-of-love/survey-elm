@@ -1,0 +1,27 @@
+html,head,body { padding:0; margin:0; }
+body { font-family: calibri, helvetica, arial, sans-serif; 
+text-align: center}
+
+.title {
+    padding: 10px;
+
+}
+
+td {
+    background: no-repeat center/80%;
+    height: 50vh;
+}
+
+.chosen {
+    border: thick green
+}
+
+table {
+    width: 100%;
+}
+
+div.allKitties {
+    white-space: nowrap;
+   width: 100vw;
+}
+

@@ -1,4 +1,4 @@
-module SurveyOptions exposing (SurveyOptionsResponse, SurveyOption, decodeSurveyOptionsResponse, kitties)
+module SurveyOptions exposing (SurveyOptionsResponse, SurveyOption, loadOptions, decodeSurveyOptionsResponse, kitties)
 
 import Json.Decode as Decode
 
@@ -9,6 +9,11 @@ type alias SurveyOption =
 
 type alias SurveyOptionsResponse =
     { seed : Int, count : Int, options : List SurveyOption }
+
+
+loadOptions : SurveyOptionsResponse -> List SurveyOption
+loadOptions r =
+    (List.sortBy .place (.options r))
 
 
 kitties : SurveyOptionsResponse

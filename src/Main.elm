@@ -31,7 +31,12 @@ update msg model =
             ( { model | chosen = Nothing }, Cmd.none )
 
         NewRandomSeed i ->
-            ( { model | seed = i }, Cmd.none )
+            ( { model
+                | seed = i
+                , options = Loading
+              }
+            , fetchSurveyOptions ( i, 3 )
+            )
 
         NewSurveyPlease ->
             ( { model | seed = 0 }
@@ -39,7 +44,21 @@ update msg model =
             )
 
         SurveyOptionsHaveArrived result ->
-            ( model, Cmd.none )
+            case result of
+                Ok surveyOptionResults ->
+                    ( { model
+                        | seed = surveyOptionResults.seed
+                        , options = Success (SurveyOptions.loadOptions surveyOptionResults)
+                      }
+                    , Cmd.none
+                    )
+
+                Err boo ->
+                    ( { model
+                        | options = Failure boo
+                      }
+                    , Cmd.none
+                    )
 
 
 type Msg
@@ -61,10 +80,10 @@ type alias Model =
 init : ( Model, Cmd Msg )
 init =
     ( { seed = 123
-      , options = Success (List.sortBy .place (.options SurveyOptions.kitties))
+      , options = Loading
       , chosen = Nothing
       }
-    , Cmd.none
+    , fetchSurveyOptions ( 123, 3 )
     )
 
 
@@ -76,8 +95,14 @@ view model =
                 Success options ->
                     (List.map (drawKitty model.chosen) options)
 
-                _ ->
+                NotAsked ->
+                    [ Html.td [] [ Html.text "Consider clicking 'New Survey'" ] ]
+
+                Loading ->
                     [ Html.td [] [ Html.text "Wait for it ... " ] ]
+
+                Failure boo ->
+                    [ Html.td [] [ Html.text ("Failure !!" ++ (toString boo)) ] ]
     in
         Html.div
             []

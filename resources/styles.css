@@ -10,6 +10,7 @@ text-align: center}
 td {
     background: no-repeat center/80%;
     height: 50vh;
+    /* transition: all 1s ease; <- this is not an improvement */
 }
 
 .chosen {

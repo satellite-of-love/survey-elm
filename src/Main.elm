@@ -23,10 +23,14 @@ update msg model =
         Choose i ->
             { model | chosen = Just i }
 
+        Unchoose ->
+            { model | chosen = Nothing }
+
 
 type Msg
     = Noop
     | Choose Int
+    | Unchoose
 
 
 type alias Model =
@@ -67,7 +71,12 @@ drawKitty chosen kitty =
                     False
     in
         Html.td
-            [ Html.Events.onClick (Choose kitty.place)
+            [ Html.Events.onClick
+                (if itIsMe then
+                    Unchoose
+                 else
+                    Choose kitty.place
+                )
             , Attr.classList [ ( "kitty", True ), ( "chosen", itIsMe ) ]
             , Attr.style [ ( "background-image", "url(" ++ kitty.imageLocation ++ ")" ) ]
             ]

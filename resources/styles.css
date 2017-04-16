@@ -13,10 +13,11 @@ td {
 }
 
 .chosen {
-    border: thick green
+    border: solid thick green;
 }
 
 table {
+    border-collapse: separate;
     width: 100%;
 }
 

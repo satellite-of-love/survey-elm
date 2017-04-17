@@ -38,7 +38,7 @@ type alias Model =
     , surveyName : String
     , options : RemoteData Http.Error (List SurveyOption)
     , chosen : Maybe Int
-    , summary : RemoteData Http.Error SurveyResultResponse
+    , voteResponse : RemoteData Http.Error SurveyResultResponse
     }
 
 
@@ -48,7 +48,7 @@ init =
       , surveyName = "Nothing Yet"
       , options = Loading
       , chosen = Nothing
-      , summary = NotAsked
+      , voteResponse = NotAsked
       }
     , fetchSurveyOptions ( 123, 3 )
     )
@@ -110,15 +110,15 @@ update msg model =
                     )
 
         Vote name options choice ->
-            ( { model | chosen = Nothing, summary = Loading }
+            ( { model | chosen = Nothing, voteResponse = Loading }
             , sendVote ( name, options, choice )
             )
 
         SurveyResultResponseHasArrived (Ok result) ->
-            ( { model | summary = Success result }, Cmd.none )
+            ( { model | voteResponse = Success result }, Cmd.none )
 
         SurveyResultResponseHasArrived (Err boo) ->
-            ( { model | summary = Failure boo }, Cmd.none )
+            ( { model | voteResponse = Failure boo }, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -138,8 +138,8 @@ view model =
                 Failure boo ->
                     [ Html.td [] [ Html.text ("Failure !!" ++ (toString boo)) ] ]
 
-        summaryContent =
-            case model.summary of
+        voteResponseContent =
+            case model.voteResponse of
                 NotAsked ->
                     ""
 
@@ -167,7 +167,7 @@ view model =
                     ]
                 ]
             , Html.div [] [ voteButton model, newSurveyButton ]
-            , Html.div [] [ Html.text summaryContent ]
+            , Html.div [] [ Html.text voteResponseContent ]
             , Html.hr [] []
             , Html.div [ Attr.class "footer" ] [ Html.a [ Attr.href "https://github.com/satellite-of-love/survey-elm/tree/gh-pages" ] [ Html.text versionInfo.version ] ]
             ]

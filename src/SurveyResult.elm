@@ -13,7 +13,9 @@ type alias SurveyResult =
 
 
 type alias SurveyResultResponse =
-    { option : SurveyOption }
+    { surveyName : String
+    , option : SurveyOption
+    }
 
 
 type alias AggregateResult =
@@ -29,9 +31,9 @@ decodeAggregateResult =
 
 decodeSurveyResultResponse : Decode.Decoder SurveyResultResponse
 decodeSurveyResultResponse =
-    SurveyOptions.decodeSurveyOption
-        |> Decode.field "option"
-        |> Decode.map SurveyResultResponse
+    Decode.map2 SurveyResultResponse
+        (Decode.field "name" Decode.string)
+        (Decode.field "option" SurveyOptions.decodeSurveyOption)
 
 
 encodeSurveyOption : SurveyOption -> Encode.Value

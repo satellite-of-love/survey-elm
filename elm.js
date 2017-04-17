@@ -13502,7 +13502,7 @@ var _satellite_of_love$survey_elm$SurveyResult$decodeAggregateResult = A3(
 	A2(_elm_lang$core$Json_Decode$field, 'option', _satellite_of_love$survey_elm$SurveyOptions$decodeSurveyOption),
 	A2(_elm_lang$core$Json_Decode$field, 'votes', _elm_lang$core$Json_Decode$int));
 
-var _satellite_of_love$survey_elm$VersionInfo$versionInfo = {version: '1.0.3'};
+var _satellite_of_love$survey_elm$VersionInfo$versionInfo = {version: '1.0.4'};
 var _satellite_of_love$survey_elm$VersionInfo$VersionInfo = function (a) {
 	return {version: a};
 };
@@ -13525,8 +13525,8 @@ var _satellite_of_love$survey_elm$Main$findChoiceText = F2(
 						},
 						options))));
 	});
-var _satellite_of_love$survey_elm$Main$sendVoteBaseUrl = 'https://survey.atomist.com/survey-results';
-var _satellite_of_love$survey_elm$Main$surveyOptionsBaseUrl = 'https://survey.atomist.com/survey-options';
+var _satellite_of_love$survey_elm$Main$sendVoteBaseUrl = 'https://survey.atomist.com/london';
+var _satellite_of_love$survey_elm$Main$surveyOptionsBaseUrl = 'https://survey.atomist.com/woodstock';
 var _satellite_of_love$survey_elm$Main$Model = F5(
 	function (a, b, c, d, e) {
 		return {seed: a, surveyName: b, options: c, chosen: d, voteResponse: e};

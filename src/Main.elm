@@ -7,6 +7,7 @@ import Random
 import Http
 import SurveyOptions exposing (SurveyOption, SurveyOptionsResponse)
 import SurveyResult exposing (SurveyResult, SurveyResultResponse)
+import VersionInfo exposing (versionInfo)
 
 
 surveyOptionsBaseUrl =
@@ -171,7 +172,7 @@ view model =
             , Html.div [] [ voteButton model, newSurveyButton ]
             , Html.div [] [ Html.text summaryContent ]
             , Html.hr [] []
-            , Html.div [ Attr.class "footer" ] [ Html.a [ Attr.href "https://github.com/satellite-of-love/survey-elm/tree/gh-pages" ] [ Html.text "Source" ] ]
+            , Html.div [ Attr.class "footer" ] [ Html.text versionInfo.version, Html.a [ Attr.href "https://github.com/satellite-of-love/survey-elm/tree/gh-pages" ] [ Html.text "Source" ] ]
             ]
 
 

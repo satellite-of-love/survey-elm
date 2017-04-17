@@ -14,11 +14,14 @@ if [ $current_branch != "master" ] ; then
 fi
 
 # precondition: clean `git status`
-uncomitted_changes=$(git status --porcelain)
-if [ -n "$uncomitted_changes" ] ; then
+uncommitted_changes=$(git status --porcelain)
+if [ -n "$uncommitted_changes" ] ; then
   echo "You have uncommitted changes. Please stash them or something"
   exit 1
 fi
+
+# bump version
+rug edit -loR BumpVersion
 
 # precondition: gh-pages exists (create if not)
 set +e

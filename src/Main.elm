@@ -14,13 +14,13 @@ surveyOptionsBaseUrl =
     "https://survey.atomist.com/survey-options"
 
 
+sendVoteBaseUrl =
+    "https://survey.atomist.com/survey-results"
+
+
 
 -- sendVoteBaseUrl =
---     "https://survey.atomist.com/survey-results"
-
-
-sendVoteBaseUrl =
-    "http://localhost:8091"
+--     "http://localhost:8091"
 
 
 main : Program Never Model Msg

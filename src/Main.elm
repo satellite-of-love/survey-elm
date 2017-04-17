@@ -14,8 +14,13 @@ surveyOptionsBaseUrl =
     "https://survey.atomist.com/survey-options"
 
 
+
+-- sendVoteBaseUrl =
+--     "https://survey.atomist.com/survey-results"
+
+
 sendVoteBaseUrl =
-    "https://survey.atomist.com/survey-results"
+    "http://localhost:8091"
 
 
 main : Program Never Model Msg
@@ -164,7 +169,7 @@ view model =
             , Html.div [] [ voteButton model, newSurveyButton ]
             , Html.div [] [ Html.text summaryContent ]
             , Html.hr [] []
-            , Html.div [ Attr.class "footer" ] [ Html.text versionInfo.version, Html.a [ Attr.href "https://github.com/satellite-of-love/survey-elm/tree/gh-pages" ] [ Html.text "Source" ] ]
+            , Html.div [ Attr.class "footer" ] [ Html.a [ Attr.href "https://github.com/satellite-of-love/survey-elm/tree/gh-pages" ] [ Html.text versionInfo.version ] ]
             ]
 
 

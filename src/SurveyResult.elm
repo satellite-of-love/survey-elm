@@ -32,7 +32,7 @@ decodeAggregateResult =
 decodeSurveyResultResponse : Decode.Decoder SurveyResultResponse
 decodeSurveyResultResponse =
     Decode.map2 SurveyResultResponse
-        (Decode.field "name" Decode.string)
+        (Decode.field "surveyName" Decode.string)
         (Decode.field "option" SurveyOptions.decodeSurveyOption)
 
 
@@ -48,7 +48,7 @@ encodeSurveyOption so =
 encodeSurveyResult : SurveyResult -> Encode.Value
 encodeSurveyResult sr =
     Encode.object
-        [ ( "name", Encode.string sr.surveyName )
+        [ ( "surveyName", Encode.string sr.surveyName )
         , ( "options", Encode.list (List.map encodeSurveyOption sr.options) )
         , ( "choice", Encode.int sr.choice )
         ]

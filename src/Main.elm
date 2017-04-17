@@ -147,7 +147,7 @@ view model =
                     "sending vote..."
 
                 Success s ->
-                    "Got it: " ++ (toString s)
+                    "You voted for: " ++ s.option.text
 
                 Failure boo ->
                     "Boo! Failure! " ++ (toString boo)

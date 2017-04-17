@@ -150,8 +150,9 @@ view model =
         Html.div
             []
             [ Html.div [ Attr.class "titleBar" ]
-                [ Html.div [ Attr.class "title" ] [ Html.text "Choose a Kitty" ]
-                , Html.div [ Attr.class "survey-number" ] [ Html.text ("Survey #" ++ (toString model.seed)) ]
+                [ Html.div [ Attr.class "survey-name" ] [ Html.text model.surveyName ]
+                , Html.div [ Attr.class "title" ] [ Html.text "Choose a Kitty" ]
+                , Html.div [ Attr.class "seed" ] [ Html.text ("seed:" ++ (toString model.seed)) ]
                 ]
             , Html.div
                 [ Attr.class "allKitties" ]

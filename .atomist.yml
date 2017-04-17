@@ -60,3 +60,18 @@ editor:
   parameters:
     - "component": "patch"
 
+---
+kind: "operation"
+client: "rug-cli 0.32.0"
+editor:
+  name: "BumpVersion"
+  group: "local"
+  artifact: "survey-elm"
+  version: "0.1.0"
+  origin:
+    repo: "git@github.com:satellite-of-love/survey-elm.git"
+    branch: "master"
+    sha: "0307615"
+  parameters:
+    - "component": "patch"
+

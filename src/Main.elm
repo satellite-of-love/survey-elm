@@ -44,13 +44,13 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { seed = 123
+    ( { seed = 1
       , surveyName = "Nothing Yet"
       , options = Loading
       , chosen = Nothing
       , voteResponse = NotAsked
       }
-    , fetchSurveyOptions ( 123, 3 )
+    , fetchSurveyOptions 1
     )
 
 
@@ -82,7 +82,7 @@ update msg model =
                 | seed = i
                 , options = Loading
               }
-            , fetchSurveyOptions ( i, 3 )
+            , fetchSurveyOptions i
             )
 
         NewSurveyPlease ->
@@ -236,15 +236,13 @@ type RemoteData e a
     | Success a
 
 
-fetchSurveyOptions : ( Int, Int ) -> Cmd Msg
-fetchSurveyOptions ( seed, choices ) =
+fetchSurveyOptions : Int -> Cmd Msg
+fetchSurveyOptions seed =
     let
         url =
             surveyOptionsBaseUrl
                 ++ "/surveyOptions?seed="
                 ++ (toString seed)
-                ++ "&count="
-                ++ (toString choices)
 
         request =
             Http.get url SurveyOptions.decodeSurveyOptionsResponse

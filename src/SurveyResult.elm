@@ -12,24 +12,24 @@ type alias SurveyResult =
 
 
 type alias SurveyResultResponse =
-    { results : List ( SurveyOption, Int ) }
+    { option : SurveyOption }
 
 
-decodeTuple : Decode.Decoder a -> Decode.Decoder b -> Decode.Decoder ( a, b )
-decodeTuple a b =
-    Decode.map2 tupleUp a b
+type alias AggregateResult =
+    { option : SurveyOption
+    , votes : Int
+    }
 
 
-tupleUp : a -> b -> ( a, b )
-tupleUp a b =
-    ( a, b )
+decodeAggregateResult : Decode.Decoder AggregateResult
+decodeAggregateResult =
+    Decode.map2 AggregateResult (Decode.field "option" SurveyOptions.decodeSurveyOption) (Decode.field "votes" Decode.int)
 
 
 decodeSurveyResultResponse : Decode.Decoder SurveyResultResponse
 decodeSurveyResultResponse =
-    decodeTuple SurveyOptions.decodeSurveyOption Decode.int
-        |> Decode.list
-        |> Decode.field "results"
+    SurveyOptions.decodeSurveyOption
+        |> Decode.field "option"
         |> Decode.map SurveyResultResponse
 
 

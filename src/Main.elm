@@ -9,6 +9,14 @@ import SurveyOptions exposing (SurveyOption, SurveyOptionsResponse)
 import SurveyResult exposing (SurveyResult, SurveyResultResponse)
 
 
+surveyOptionsBaseUrl =
+    "https://survey.atomist.com/survey-options"
+
+
+sendVoteBaseUrl =
+    "https://survey.atomist.com/survey-results"
+
+
 main : Program Never Model Msg
 main =
     Html.program
@@ -221,7 +229,11 @@ fetchSurveyOptions : ( Int, Int ) -> Cmd Msg
 fetchSurveyOptions ( seed, choices ) =
     let
         url =
-            "https://survey.atomist.com/survey-options/surveyOptions?seed=" ++ (toString seed) ++ "&count=" ++ (toString choices)
+            surveyOptionsBaseUrl
+                ++ "/surveyOptions?seed="
+                ++ (toString seed)
+                ++ "&count="
+                ++ (toString choices)
 
         request =
             Http.get url SurveyOptions.decodeSurveyOptionsResponse
@@ -233,7 +245,7 @@ sendVote : ( List SurveyOption, Int ) -> Cmd Msg
 sendVote ( options, choice ) =
     let
         url =
-            "https://survey.atomist.com/survey-results/vote"
+            sendVoteBaseUrl ++ "/vote"
 
         body =
             Http.jsonBody (SurveyResult.encodeSurveyResult (SurveyResult options choice))

@@ -10,10 +10,12 @@ import SurveyResult exposing (SurveyResult, SurveyResultResponse)
 import VersionInfo exposing (versionInfo)
 
 
+surveyOptionsBaseUrl : String
 surveyOptionsBaseUrl =
-    "https://survey.atomist.com/survey-options"
+    "https://survey.atomist.com/woodstock"
 
 
+sendVoteBaseUrl : String
 sendVoteBaseUrl =
     "https://survey.atomist.com/survey-results"
 
@@ -227,6 +229,8 @@ findChoiceText options place =
 
 
 --- HTTP
+-- surveyOptionsBaseUrl =
+--     "https://survey.atomist.com/survey-options"
 
 
 type RemoteData e a

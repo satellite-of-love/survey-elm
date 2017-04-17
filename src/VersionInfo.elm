@@ -1,5 +1,7 @@
 module VersionInfo exposing (versionInfo)
 
+-- TODO: add release date and time
+
 
 type alias VersionInfo =
     { version : String }

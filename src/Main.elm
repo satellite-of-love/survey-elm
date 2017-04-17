@@ -28,6 +28,36 @@ main =
         }
 
 
+type alias Model =
+    { seed : Int
+    , options : RemoteData Http.Error (List SurveyOption)
+    , chosen : Maybe Int
+    , summary : RemoteData Http.Error SurveyResultResponse
+    }
+
+
+init : ( Model, Cmd Msg )
+init =
+    ( { seed = 123
+      , options = Loading
+      , chosen = Nothing
+      , summary = NotAsked
+      }
+    , fetchSurveyOptions ( 123, 3 )
+    )
+
+
+type Msg
+    = Noop
+    | Choose Int
+    | Unchoose
+    | NewSurveyPlease
+    | NewRandomSeed Int
+    | SurveyOptionsHaveArrived (Result Http.Error SurveyOptionsResponse)
+    | Vote (List SurveyOption) Int
+    | SurveyResultResponseHasArrived (Result Http.Error SurveyResultResponse)
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -80,49 +110,6 @@ update msg model =
 
         SurveyResultResponseHasArrived (Err boo) ->
             ( { model | summary = Failure boo }, Cmd.none )
-
-
-type Msg
-    = Noop
-    | Choose Int
-    | Unchoose
-    | NewSurveyPlease
-    | NewRandomSeed Int
-    | SurveyOptionsHaveArrived (Result Http.Error SurveyOptionsResponse)
-    | Vote (List SurveyOption) Int
-    | SurveyResultResponseHasArrived (Result Http.Error SurveyResultResponse)
-
-
-
--- It is strangely difficult to access a list by index
-
-
-findChoiceText : List SurveyOption -> Int -> String
-findChoiceText options place =
-    options
-        |> List.filter (\e -> e.place == place)
-        |> List.head
-        |> Maybe.map .text
-        |> Maybe.withDefault "WAT"
-
-
-type alias Model =
-    { seed : Int
-    , options : RemoteData Http.Error (List SurveyOption)
-    , chosen : Maybe Int
-    , summary : RemoteData Http.Error SurveyResultResponse
-    }
-
-
-init : ( Model, Cmd Msg )
-init =
-    ( { seed = 123
-      , options = Loading
-      , chosen = Nothing
-      , summary = NotAsked
-      }
-    , fetchSurveyOptions ( 123, 3 )
-    )
 
 
 view : Model -> Html Msg
@@ -213,6 +200,19 @@ drawKitty chosen kitty =
             , Attr.style [ ( "background-image", "url(" ++ kitty.imageLocation ++ ")" ) ]
             ]
             []
+
+
+
+-- It is strangely difficult to access a list by index
+
+
+findChoiceText : List SurveyOption -> Int -> String
+findChoiceText options place =
+    options
+        |> List.filter (\e -> e.place == place)
+        |> List.head
+        |> Maybe.map .text
+        |> Maybe.withDefault "WAT"
 
 
 

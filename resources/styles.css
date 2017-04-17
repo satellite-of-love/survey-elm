@@ -22,8 +22,12 @@ td {
     border: solid thick grey;
 }
 
-.survey-number {
+.seed {
     float: right;
+}
+
+.survey-name {
+    float: left;
 }
 
 .chosen {

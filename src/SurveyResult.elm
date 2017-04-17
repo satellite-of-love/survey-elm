@@ -6,31 +6,34 @@ import SurveyOptions exposing (SurveyOption)
 
 
 type alias SurveyResult =
-    { options : List SurveyOption
+    { surveyName : String
+    , options : List SurveyOption
     , choice : Int
     }
 
 
 type alias SurveyResultResponse =
-    { results : List ( SurveyOption, Int ) }
+    { surveyName : String
+    , option : SurveyOption
+    }
 
 
-decodeTuple : Decode.Decoder a -> Decode.Decoder b -> Decode.Decoder ( a, b )
-decodeTuple a b =
-    Decode.map2 tupleUp a b
+type alias AggregateResult =
+    { option : SurveyOption
+    , votes : Int
+    }
 
 
-tupleUp : a -> b -> ( a, b )
-tupleUp a b =
-    ( a, b )
+decodeAggregateResult : Decode.Decoder AggregateResult
+decodeAggregateResult =
+    Decode.map2 AggregateResult (Decode.field "option" SurveyOptions.decodeSurveyOption) (Decode.field "votes" Decode.int)
 
 
 decodeSurveyResultResponse : Decode.Decoder SurveyResultResponse
 decodeSurveyResultResponse =
-    decodeTuple SurveyOptions.decodeSurveyOption Decode.int
-        |> Decode.list
-        |> Decode.field "results"
-        |> Decode.map SurveyResultResponse
+    Decode.map2 SurveyResultResponse
+        (Decode.field "surveyName" Decode.string)
+        (Decode.field "option" SurveyOptions.decodeSurveyOption)
 
 
 encodeSurveyOption : SurveyOption -> Encode.Value
@@ -45,6 +48,7 @@ encodeSurveyOption so =
 encodeSurveyResult : SurveyResult -> Encode.Value
 encodeSurveyResult sr =
     Encode.object
-        [ ( "options", Encode.list (List.map encodeSurveyOption sr.options) )
+        [ ( "surveyName", Encode.string sr.surveyName )
+        , ( "options", Encode.list (List.map encodeSurveyOption sr.options) )
         , ( "choice", Encode.int sr.choice )
         ]

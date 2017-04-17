@@ -7,6 +7,20 @@ import Random
 import Http
 import SurveyOptions exposing (SurveyOption, SurveyOptionsResponse)
 import SurveyResult exposing (SurveyResult, SurveyResultResponse)
+import VersionInfo exposing (versionInfo)
+
+
+surveyOptionsBaseUrl =
+    "https://survey.atomist.com/survey-options"
+
+
+sendVoteBaseUrl =
+    "https://survey.atomist.com/survey-results"
+
+
+
+-- sendVoteBaseUrl =
+--     "http://localhost:8091"
 
 
 main : Program Never Model Msg
@@ -17,6 +31,38 @@ main =
         , update = update
         , subscriptions = (\_ -> Sub.none)
         }
+
+
+type alias Model =
+    { seed : Int
+    , surveyName : String
+    , options : RemoteData Http.Error (List SurveyOption)
+    , chosen : Maybe Int
+    , voteResponse : RemoteData Http.Error SurveyResultResponse
+    }
+
+
+init : ( Model, Cmd Msg )
+init =
+    ( { seed = 1
+      , surveyName = "Nothing Yet"
+      , options = Loading
+      , chosen = Nothing
+      , voteResponse = NotAsked
+      }
+    , fetchSurveyOptions 1
+    )
+
+
+type Msg
+    = Noop
+    | Choose Int
+    | Unchoose
+    | NewSurveyPlease
+    | NewRandomSeed Int
+    | SurveyOptionsHaveArrived (Result Http.Error SurveyOptionsResponse)
+    | Vote String (List SurveyOption) Int
+    | SurveyResultResponseHasArrived (Result Http.Error SurveyResultResponse)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -36,7 +82,7 @@ update msg model =
                 | seed = i
                 , options = Loading
               }
-            , fetchSurveyOptions ( i, 3 )
+            , fetchSurveyOptions i
             )
 
         NewSurveyPlease ->
@@ -49,6 +95,7 @@ update msg model =
                 Ok surveyOptionResults ->
                     ( { model
                         | seed = surveyOptionResults.seed
+                        , surveyName = "Survey " ++ (toString surveyOptionResults.seed)
                         , options = Success (SurveyOptions.loadOptions surveyOptionResults)
                       }
                     , Cmd.none
@@ -56,64 +103,22 @@ update msg model =
 
                 Err boo ->
                     ( { model
-                        | options = Failure boo
+                        | surveyName = "Fallback Kitties"
+                        , options = Success (.options SurveyOptions.kitties)
                       }
                     , Cmd.none
                     )
 
-        Vote options choice ->
-            ( { model | chosen = Nothing, summary = Loading }
-            , sendVote ( options, choice )
+        Vote name options choice ->
+            ( { model | chosen = Nothing, voteResponse = Loading }
+            , sendVote ( name, options, choice )
             )
 
         SurveyResultResponseHasArrived (Ok result) ->
-            ( { model | summary = Success ("Got it: " ++ (toString result)) }, Cmd.none )
+            ( { model | voteResponse = Success result }, Cmd.none )
 
         SurveyResultResponseHasArrived (Err boo) ->
-            ( { model | summary = Failure boo }, Cmd.none )
-
-
-type Msg
-    = Noop
-    | Choose Int
-    | Unchoose
-    | NewSurveyPlease
-    | NewRandomSeed Int
-    | SurveyOptionsHaveArrived (Result Http.Error SurveyOptionsResponse)
-    | Vote (List SurveyOption) Int
-    | SurveyResultResponseHasArrived (Result Http.Error SurveyResultResponse)
-
-
-
--- It is strangely difficult to access a list by index
-
-
-findChoiceText : List SurveyOption -> Int -> String
-findChoiceText options place =
-    options
-        |> List.filter (\e -> e.place == place)
-        |> List.head
-        |> Maybe.map .text
-        |> Maybe.withDefault "WAT"
-
-
-type alias Model =
-    { seed : Int
-    , options : RemoteData Http.Error (List SurveyOption)
-    , chosen : Maybe Int
-    , summary : RemoteData Http.Error String
-    }
-
-
-init : ( Model, Cmd Msg )
-init =
-    ( { seed = 123
-      , options = Loading
-      , chosen = Nothing
-      , summary = NotAsked
-      }
-    , fetchSurveyOptions ( 123, 3 )
-    )
+            ( { model | voteResponse = Failure boo }, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -133,8 +138,8 @@ view model =
                 Failure boo ->
                     [ Html.td [] [ Html.text ("Failure !!" ++ (toString boo)) ] ]
 
-        summaryContent =
-            case model.summary of
+        voteResponseContent =
+            case model.voteResponse of
                 NotAsked ->
                     ""
 
@@ -142,7 +147,7 @@ view model =
                     "sending vote..."
 
                 Success s ->
-                    s
+                    "You voted for: " ++ s.option.text
 
                 Failure boo ->
                     "Boo! Failure! " ++ (toString boo)
@@ -150,8 +155,9 @@ view model =
         Html.div
             []
             [ Html.div [ Attr.class "titleBar" ]
-                [ Html.div [ Attr.class "title" ] [ Html.text "Choose a Kitty" ]
-                , Html.div [ Attr.class "survey-number" ] [ Html.text ("Survey #" ++ (toString model.seed)) ]
+                [ Html.div [ Attr.class "survey-name" ] [ Html.text model.surveyName ]
+                , Html.div [ Attr.class "title" ] [ Html.text "Choose a Kitty" ]
+                , Html.div [ Attr.class "seed" ] [ Html.text ("seed:" ++ (toString model.seed)) ]
                 ]
             , Html.div
                 [ Attr.class "allKitties" ]
@@ -161,9 +167,9 @@ view model =
                     ]
                 ]
             , Html.div [] [ voteButton model, newSurveyButton ]
-            , Html.div [] [ Html.text summaryContent ]
+            , Html.div [] [ Html.text voteResponseContent ]
             , Html.hr [] []
-            , Html.div [ Attr.class "footer" ] [ Html.a [ Attr.href "https://github.com/satellite-of-love/survey-elm/tree/gh-pages" ] [ Html.text "Source" ] ]
+            , Html.div [ Attr.class "footer" ] [ Html.a [ Attr.href "https://github.com/satellite-of-love/survey-elm/tree/gh-pages" ] [ Html.text versionInfo.version ] ]
             ]
 
 
@@ -171,7 +177,7 @@ voteButton : Model -> Html Msg
 voteButton model =
     case ( model.chosen, model.options ) of
         ( Just kitteh, Success opts ) ->
-            Html.button [ Html.Events.onClick (Vote opts kitteh) ] [ Html.text "Vote" ]
+            Html.button [ Html.Events.onClick (Vote model.surveyName opts kitteh) ] [ Html.text "Vote" ]
 
         _ ->
             Html.button [ Attr.disabled True ] [ Html.text "Vote" ]
@@ -207,6 +213,19 @@ drawKitty chosen kitty =
 
 
 
+-- It is strangely difficult to access a list by index
+
+
+findChoiceText : List SurveyOption -> Int -> String
+findChoiceText options place =
+    options
+        |> List.filter (\e -> e.place == place)
+        |> List.head
+        |> Maybe.map .text
+        |> Maybe.withDefault "WAT"
+
+
+
 --- HTTP
 
 
@@ -217,11 +236,13 @@ type RemoteData e a
     | Success a
 
 
-fetchSurveyOptions : ( Int, Int ) -> Cmd Msg
-fetchSurveyOptions ( seed, choices ) =
+fetchSurveyOptions : Int -> Cmd Msg
+fetchSurveyOptions seed =
     let
         url =
-            "https://survey.atomist.com/survey-options/surveyOptions?seed=" ++ (toString seed) ++ "&count=" ++ (toString choices)
+            surveyOptionsBaseUrl
+                ++ "/surveyOptions?seed="
+                ++ (toString seed)
 
         request =
             Http.get url SurveyOptions.decodeSurveyOptionsResponse
@@ -229,14 +250,14 @@ fetchSurveyOptions ( seed, choices ) =
         Http.send SurveyOptionsHaveArrived request
 
 
-sendVote : ( List SurveyOption, Int ) -> Cmd Msg
-sendVote ( options, choice ) =
+sendVote : ( String, List SurveyOption, Int ) -> Cmd Msg
+sendVote ( name, options, choice ) =
     let
         url =
-            "https://survey.atomist.com/survey-results/vote"
+            sendVoteBaseUrl ++ "/vote"
 
         body =
-            Http.jsonBody (SurveyResult.encodeSurveyResult (SurveyResult options choice))
+            Http.jsonBody (SurveyResult.encodeSurveyResult (SurveyResult name options choice))
 
         request =
             Http.post url body SurveyResult.decodeSurveyResultResponse

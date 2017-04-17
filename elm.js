@@ -13456,44 +13456,56 @@ var _satellite_of_love$survey_elm$SurveyResult$encodeSurveyResult = function (sr
 			ctor: '::',
 			_0: {
 				ctor: '_Tuple2',
-				_0: 'options',
-				_1: _elm_lang$core$Json_Encode$list(
-					A2(_elm_lang$core$List$map, _satellite_of_love$survey_elm$SurveyResult$encodeSurveyOption, sr.options))
+				_0: 'surveyName',
+				_1: _elm_lang$core$Json_Encode$string(sr.surveyName)
 			},
 			_1: {
 				ctor: '::',
 				_0: {
 					ctor: '_Tuple2',
-					_0: 'choice',
-					_1: _elm_lang$core$Json_Encode$int(sr.choice)
+					_0: 'options',
+					_1: _elm_lang$core$Json_Encode$list(
+						A2(_elm_lang$core$List$map, _satellite_of_love$survey_elm$SurveyResult$encodeSurveyOption, sr.options))
 				},
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'choice',
+						_1: _elm_lang$core$Json_Encode$int(sr.choice)
+					},
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };
-var _satellite_of_love$survey_elm$SurveyResult$tupleUp = F2(
-	function (a, b) {
-		return {ctor: '_Tuple2', _0: a, _1: b};
+var _satellite_of_love$survey_elm$SurveyResult$SurveyResult = F3(
+	function (a, b, c) {
+		return {surveyName: a, options: b, choice: c};
 	});
-var _satellite_of_love$survey_elm$SurveyResult$decodeTuple = F2(
+var _satellite_of_love$survey_elm$SurveyResult$SurveyResultResponse = F2(
 	function (a, b) {
-		return A3(_elm_lang$core$Json_Decode$map2, _satellite_of_love$survey_elm$SurveyResult$tupleUp, a, b);
+		return {surveyName: a, option: b};
 	});
-var _satellite_of_love$survey_elm$SurveyResult$SurveyResult = F2(
-	function (a, b) {
-		return {options: a, choice: b};
-	});
-var _satellite_of_love$survey_elm$SurveyResult$SurveyResultResponse = function (a) {
-	return {results: a};
-};
-var _satellite_of_love$survey_elm$SurveyResult$decodeSurveyResultResponse = A2(
-	_elm_lang$core$Json_Decode$map,
+var _satellite_of_love$survey_elm$SurveyResult$decodeSurveyResultResponse = A3(
+	_elm_lang$core$Json_Decode$map2,
 	_satellite_of_love$survey_elm$SurveyResult$SurveyResultResponse,
-	A2(
-		_elm_lang$core$Json_Decode$field,
-		'results',
-		_elm_lang$core$Json_Decode$list(
-			A2(_satellite_of_love$survey_elm$SurveyResult$decodeTuple, _satellite_of_love$survey_elm$SurveyOptions$decodeSurveyOption, _elm_lang$core$Json_Decode$int))));
+	A2(_elm_lang$core$Json_Decode$field, 'surveyName', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'option', _satellite_of_love$survey_elm$SurveyOptions$decodeSurveyOption));
+var _satellite_of_love$survey_elm$SurveyResult$AggregateResult = F2(
+	function (a, b) {
+		return {option: a, votes: b};
+	});
+var _satellite_of_love$survey_elm$SurveyResult$decodeAggregateResult = A3(
+	_elm_lang$core$Json_Decode$map2,
+	_satellite_of_love$survey_elm$SurveyResult$AggregateResult,
+	A2(_elm_lang$core$Json_Decode$field, 'option', _satellite_of_love$survey_elm$SurveyOptions$decodeSurveyOption),
+	A2(_elm_lang$core$Json_Decode$field, 'votes', _elm_lang$core$Json_Decode$int));
+
+var _satellite_of_love$survey_elm$VersionInfo$versionInfo = {version: '1.0.3'};
+var _satellite_of_love$survey_elm$VersionInfo$VersionInfo = function (a) {
+	return {version: a};
+};
 
 var _satellite_of_love$survey_elm$Main$findChoiceText = F2(
 	function (options, place) {
@@ -13513,9 +13525,11 @@ var _satellite_of_love$survey_elm$Main$findChoiceText = F2(
 						},
 						options))));
 	});
-var _satellite_of_love$survey_elm$Main$Model = F4(
-	function (a, b, c, d) {
-		return {seed: a, options: b, chosen: c, summary: d};
+var _satellite_of_love$survey_elm$Main$sendVoteBaseUrl = 'https://survey.atomist.com/survey-results';
+var _satellite_of_love$survey_elm$Main$surveyOptionsBaseUrl = 'https://survey.atomist.com/survey-options';
+var _satellite_of_love$survey_elm$Main$Model = F5(
+	function (a, b, c, d, e) {
+		return {seed: a, surveyName: b, options: c, chosen: d, voteResponse: e};
 	});
 var _satellite_of_love$survey_elm$Main$SurveyResultResponseHasArrived = function (a) {
 	return {ctor: 'SurveyResultResponseHasArrived', _0: a};
@@ -13524,14 +13538,14 @@ var _satellite_of_love$survey_elm$Main$sendVote = function (_p0) {
 	var _p1 = _p0;
 	var body = _elm_lang$http$Http$jsonBody(
 		_satellite_of_love$survey_elm$SurveyResult$encodeSurveyResult(
-			A2(_satellite_of_love$survey_elm$SurveyResult$SurveyResult, _p1._0, _p1._1)));
-	var url = 'https://survey.atomist.com/survey-results/vote';
+			A3(_satellite_of_love$survey_elm$SurveyResult$SurveyResult, _p1._0, _p1._1, _p1._2)));
+	var url = A2(_elm_lang$core$Basics_ops['++'], _satellite_of_love$survey_elm$Main$sendVoteBaseUrl, '/vote');
 	var request = A3(_elm_lang$http$Http$post, url, body, _satellite_of_love$survey_elm$SurveyResult$decodeSurveyResultResponse);
 	return A2(_elm_lang$http$Http$send, _satellite_of_love$survey_elm$Main$SurveyResultResponseHasArrived, request);
 };
-var _satellite_of_love$survey_elm$Main$Vote = F2(
-	function (a, b) {
-		return {ctor: 'Vote', _0: a, _1: b};
+var _satellite_of_love$survey_elm$Main$Vote = F3(
+	function (a, b, c) {
+		return {ctor: 'Vote', _0: a, _1: b, _2: c};
 	});
 var _satellite_of_love$survey_elm$Main$voteButton = function (model) {
 	var _p2 = {ctor: '_Tuple2', _0: model.chosen, _1: model.options};
@@ -13541,7 +13555,7 @@ var _satellite_of_love$survey_elm$Main$voteButton = function (model) {
 			{
 				ctor: '::',
 				_0: _elm_lang$html$Html_Events$onClick(
-					A2(_satellite_of_love$survey_elm$Main$Vote, _p2._1._0, _p2._0._0)),
+					A3(_satellite_of_love$survey_elm$Main$Vote, model.surveyName, _p2._1._0, _p2._0._0)),
 				_1: {ctor: '[]'}
 			},
 			{
@@ -13567,18 +13581,14 @@ var _satellite_of_love$survey_elm$Main$voteButton = function (model) {
 var _satellite_of_love$survey_elm$Main$SurveyOptionsHaveArrived = function (a) {
 	return {ctor: 'SurveyOptionsHaveArrived', _0: a};
 };
-var _satellite_of_love$survey_elm$Main$fetchSurveyOptions = function (_p3) {
-	var _p4 = _p3;
+var _satellite_of_love$survey_elm$Main$fetchSurveyOptions = function (seed) {
 	var url = A2(
 		_elm_lang$core$Basics_ops['++'],
-		'https://survey.atomist.com/survey-options/surveyOptions?seed=',
+		_satellite_of_love$survey_elm$Main$surveyOptionsBaseUrl,
 		A2(
 			_elm_lang$core$Basics_ops['++'],
-			_elm_lang$core$Basics$toString(_p4._0),
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				'&count=',
-				_elm_lang$core$Basics$toString(_p4._1))));
+			'/surveyOptions?seed=',
+			_elm_lang$core$Basics$toString(seed)));
 	var request = A2(_elm_lang$http$Http$get, url, _satellite_of_love$survey_elm$SurveyOptions$decodeSurveyOptionsResponse);
 	return A2(_elm_lang$http$Http$send, _satellite_of_love$survey_elm$Main$SurveyOptionsHaveArrived, request);
 };
@@ -13605,9 +13615,9 @@ var _satellite_of_love$survey_elm$Main$Choose = function (a) {
 var _satellite_of_love$survey_elm$Main$drawKitty = F2(
 	function (chosen, kitty) {
 		var itIsMe = function () {
-			var _p5 = chosen;
-			if (_p5.ctor === 'Just') {
-				return _elm_lang$core$Native_Utils.eq(kitty.place, _p5._0);
+			var _p3 = chosen;
+			if (_p3.ctor === 'Just') {
+				return _elm_lang$core$Native_Utils.eq(kitty.place, _p3._0);
 			} else {
 				return false;
 			}
@@ -13652,30 +13662,30 @@ var _satellite_of_love$survey_elm$Main$drawKitty = F2(
 			{ctor: '[]'});
 	});
 var _satellite_of_love$survey_elm$Main$view = function (model) {
-	var summaryContent = function () {
-		var _p6 = model.summary;
-		switch (_p6.ctor) {
+	var voteResponseContent = function () {
+		var _p4 = model.voteResponse;
+		switch (_p4.ctor) {
 			case 'NotAsked':
 				return '';
 			case 'Loading':
 				return 'sending vote...';
 			case 'Success':
-				return _p6._0;
+				return A2(_elm_lang$core$Basics_ops['++'], 'You voted for: ', _p4._0.option.text);
 			default:
 				return A2(
 					_elm_lang$core$Basics_ops['++'],
 					'Boo! Failure! ',
-					_elm_lang$core$Basics$toString(_p6._0));
+					_elm_lang$core$Basics$toString(_p4._0));
 		}
 	}();
 	var tableContent = function () {
-		var _p7 = model.options;
-		switch (_p7.ctor) {
+		var _p5 = model.options;
+		switch (_p5.ctor) {
 			case 'Success':
 				return A2(
 					_elm_lang$core$List$map,
 					_satellite_of_love$survey_elm$Main$drawKitty(model.chosen),
-					_p7._0);
+					_p5._0);
 			case 'NotAsked':
 				return {
 					ctor: '::',
@@ -13714,7 +13724,7 @@ var _satellite_of_love$survey_elm$Main$view = function (model) {
 								A2(
 									_elm_lang$core$Basics_ops['++'],
 									'Failure !!',
-									_elm_lang$core$Basics$toString(_p7._0))),
+									_elm_lang$core$Basics$toString(_p5._0))),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
@@ -13739,12 +13749,12 @@ var _satellite_of_love$survey_elm$Main$view = function (model) {
 						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('title'),
+							_0: _elm_lang$html$Html_Attributes$class('survey-name'),
 							_1: {ctor: '[]'}
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('Choose a Kitty'),
+							_0: _elm_lang$html$Html$text(model.surveyName),
 							_1: {ctor: '[]'}
 						}),
 					_1: {
@@ -13753,19 +13763,34 @@ var _satellite_of_love$survey_elm$Main$view = function (model) {
 							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('survey-number'),
+								_0: _elm_lang$html$Html_Attributes$class('title'),
 								_1: {ctor: '[]'}
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(
-									A2(
-										_elm_lang$core$Basics_ops['++'],
-										'Survey #',
-										_elm_lang$core$Basics$toString(model.seed))),
+								_0: _elm_lang$html$Html$text('Choose a Kitty'),
 								_1: {ctor: '[]'}
 							}),
-						_1: {ctor: '[]'}
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('seed'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											'seed:',
+											_elm_lang$core$Basics$toString(model.seed))),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
 					}
 				}),
 			_1: {
@@ -13813,7 +13838,7 @@ var _satellite_of_love$survey_elm$Main$view = function (model) {
 							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(summaryContent),
+								_0: _elm_lang$html$Html$text(voteResponseContent),
 								_1: {ctor: '[]'}
 							}),
 						_1: {
@@ -13842,7 +13867,7 @@ var _satellite_of_love$survey_elm$Main$view = function (model) {
 											},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text('Source'),
+												_0: _elm_lang$html$Html$text(_satellite_of_love$survey_elm$VersionInfo$versionInfo.version),
 												_1: {ctor: '[]'}
 											}),
 										_1: {ctor: '[]'}
@@ -13865,8 +13890,8 @@ var _satellite_of_love$survey_elm$Main$Failure = function (a) {
 var _satellite_of_love$survey_elm$Main$Loading = {ctor: 'Loading'};
 var _satellite_of_love$survey_elm$Main$update = F2(
 	function (msg, model) {
-		var _p8 = msg;
-		switch (_p8.ctor) {
+		var _p6 = msg;
+		switch (_p6.ctor) {
 			case 'Noop':
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Choose':
@@ -13875,7 +13900,7 @@ var _satellite_of_love$survey_elm$Main$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							chosen: _elm_lang$core$Maybe$Just(_p8._0)
+							chosen: _elm_lang$core$Maybe$Just(_p6._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -13888,14 +13913,13 @@ var _satellite_of_love$survey_elm$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'NewRandomSeed':
-				var _p9 = _p8._0;
+				var _p7 = _p6._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{seed: _p9, options: _satellite_of_love$survey_elm$Main$Loading}),
-					_1: _satellite_of_love$survey_elm$Main$fetchSurveyOptions(
-						{ctor: '_Tuple2', _0: _p9, _1: 3})
+						{seed: _p7, options: _satellite_of_love$survey_elm$Main$Loading}),
+					_1: _satellite_of_love$survey_elm$Main$fetchSurveyOptions(_p7)
 				};
 			case 'NewSurveyPlease':
 				return {
@@ -13909,17 +13933,21 @@ var _satellite_of_love$survey_elm$Main$update = F2(
 						A2(_elm_lang$core$Random$int, 1, 10))
 				};
 			case 'SurveyOptionsHaveArrived':
-				var _p10 = _p8._0;
-				if (_p10.ctor === 'Ok') {
-					var _p11 = _p10._0;
+				var _p8 = _p6._0;
+				if (_p8.ctor === 'Ok') {
+					var _p9 = _p8._0;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								seed: _p11.seed,
+								seed: _p9.seed,
+								surveyName: A2(
+									_elm_lang$core$Basics_ops['++'],
+									'Survey ',
+									_elm_lang$core$Basics$toString(_p9.seed)),
 								options: _satellite_of_love$survey_elm$Main$Success(
-									_satellite_of_love$survey_elm$SurveyOptions$loadOptions(_p11))
+									_satellite_of_love$survey_elm$SurveyOptions$loadOptions(_p9))
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -13929,7 +13957,11 @@ var _satellite_of_love$survey_elm$Main$update = F2(
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								options: _satellite_of_love$survey_elm$Main$Failure(_p10._0)
+								surveyName: 'Fallback Kitties',
+								options: _satellite_of_love$survey_elm$Main$Success(
+									function (_) {
+										return _.options;
+									}(_satellite_of_love$survey_elm$SurveyOptions$kitties))
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -13939,22 +13971,18 @@ var _satellite_of_love$survey_elm$Main$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{chosen: _elm_lang$core$Maybe$Nothing, summary: _satellite_of_love$survey_elm$Main$Loading}),
+						{chosen: _elm_lang$core$Maybe$Nothing, voteResponse: _satellite_of_love$survey_elm$Main$Loading}),
 					_1: _satellite_of_love$survey_elm$Main$sendVote(
-						{ctor: '_Tuple2', _0: _p8._0, _1: _p8._1})
+						{ctor: '_Tuple3', _0: _p6._0, _1: _p6._1, _2: _p6._2})
 				};
 			default:
-				if (_p8._0.ctor === 'Ok') {
+				if (_p6._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								summary: _satellite_of_love$survey_elm$Main$Success(
-									A2(
-										_elm_lang$core$Basics_ops['++'],
-										'Got it: ',
-										_elm_lang$core$Basics$toString(_p8._0._0)))
+								voteResponse: _satellite_of_love$survey_elm$Main$Success(_p6._0._0)
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -13964,7 +13992,7 @@ var _satellite_of_love$survey_elm$Main$update = F2(
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								summary: _satellite_of_love$survey_elm$Main$Failure(_p8._0._0)
+								voteResponse: _satellite_of_love$survey_elm$Main$Failure(_p6._0._0)
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -13974,16 +14002,15 @@ var _satellite_of_love$survey_elm$Main$update = F2(
 var _satellite_of_love$survey_elm$Main$NotAsked = {ctor: 'NotAsked'};
 var _satellite_of_love$survey_elm$Main$init = {
 	ctor: '_Tuple2',
-	_0: {seed: 123, options: _satellite_of_love$survey_elm$Main$Loading, chosen: _elm_lang$core$Maybe$Nothing, summary: _satellite_of_love$survey_elm$Main$NotAsked},
-	_1: _satellite_of_love$survey_elm$Main$fetchSurveyOptions(
-		{ctor: '_Tuple2', _0: 123, _1: 3})
+	_0: {seed: 1, surveyName: 'Nothing Yet', options: _satellite_of_love$survey_elm$Main$Loading, chosen: _elm_lang$core$Maybe$Nothing, voteResponse: _satellite_of_love$survey_elm$Main$NotAsked},
+	_1: _satellite_of_love$survey_elm$Main$fetchSurveyOptions(1)
 };
 var _satellite_of_love$survey_elm$Main$main = _elm_lang$html$Html$program(
 	{
 		init: _satellite_of_love$survey_elm$Main$init,
 		view: _satellite_of_love$survey_elm$Main$view,
 		update: _satellite_of_love$survey_elm$Main$update,
-		subscriptions: function (_p12) {
+		subscriptions: function (_p10) {
 			return _elm_lang$core$Platform_Sub$none;
 		}
 	})();
@@ -13991,7 +14018,7 @@ var _satellite_of_love$survey_elm$Main$main = _elm_lang$html$Html$program(
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _satellite_of_love$survey_elm$Main$main !== 'undefined') {
-    _satellite_of_love$survey_elm$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Main.Msg":{"args":[],"tags":{"NewRandomSeed":["Int"],"NewSurveyPlease":[],"Choose":["Int"],"Vote":["List SurveyOptions.SurveyOption","Int"],"SurveyOptionsHaveArrived":["Result.Result Http.Error SurveyOptions.SurveyOptionsResponse"],"Unchoose":[],"Noop":[],"SurveyResultResponseHasArrived":["Result.Result Http.Error SurveyResult.SurveyResultResponse"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"SurveyResult.SurveyResultResponse":{"args":[],"type":"{ results : List ( SurveyOptions.SurveyOption, Int ) }"},"SurveyOptions.SurveyOption":{"args":[],"type":"{ imageLocation : String, text : String, place : Int }"},"SurveyOptions.SurveyOptionsResponse":{"args":[],"type":"{ seed : Int , count : Int , options : List SurveyOptions.SurveyOption }"}},"message":"Main.Msg"},"versions":{"elm":"0.18.0"}});
+    _satellite_of_love$survey_elm$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Main.Msg":{"args":[],"tags":{"NewRandomSeed":["Int"],"NewSurveyPlease":[],"Choose":["Int"],"Vote":["String","List SurveyOptions.SurveyOption","Int"],"SurveyOptionsHaveArrived":["Result.Result Http.Error SurveyOptions.SurveyOptionsResponse"],"Unchoose":[],"Noop":[],"SurveyResultResponseHasArrived":["Result.Result Http.Error SurveyResult.SurveyResultResponse"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"SurveyResult.SurveyResultResponse":{"args":[],"type":"{ surveyName : String, option : SurveyOptions.SurveyOption }"},"SurveyOptions.SurveyOption":{"args":[],"type":"{ imageLocation : String, text : String, place : Int }"},"SurveyOptions.SurveyOptionsResponse":{"args":[],"type":"{ seed : Int , count : Int , options : List SurveyOptions.SurveyOption }"}},"message":"Main.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])

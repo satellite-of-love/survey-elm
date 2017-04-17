@@ -17,7 +17,7 @@ surveyOptionsBaseUrl =
 
 sendVoteBaseUrl : String
 sendVoteBaseUrl =
-    "https://survey.atomist.com/survey-results"
+    "https://survey.atomist.com/london"
 
 
 

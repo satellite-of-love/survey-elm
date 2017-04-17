@@ -6,7 +6,8 @@ import SurveyOptions exposing (SurveyOption)
 
 
 type alias SurveyResult =
-    { options : List SurveyOption
+    { surveyName : String
+    , options : List SurveyOption
     , choice : Int
     }
 
@@ -45,6 +46,7 @@ encodeSurveyOption so =
 encodeSurveyResult : SurveyResult -> Encode.Value
 encodeSurveyResult sr =
     Encode.object
-        [ ( "options", Encode.list (List.map encodeSurveyOption sr.options) )
+        [ ( "name", Encode.string sr.surveyName )
+        , ( "options", Encode.list (List.map encodeSurveyOption sr.options) )
         , ( "choice", Encode.int sr.choice )
         ]

@@ -30,6 +30,7 @@ main =
 
 type alias Model =
     { seed : Int
+    , surveyName : String
     , options : RemoteData Http.Error (List SurveyOption)
     , chosen : Maybe Int
     , summary : RemoteData Http.Error SurveyResultResponse
@@ -39,6 +40,7 @@ type alias Model =
 init : ( Model, Cmd Msg )
 init =
     ( { seed = 123
+      , surveyName = "Nothing Yet"
       , options = Loading
       , chosen = Nothing
       , summary = NotAsked
@@ -54,7 +56,7 @@ type Msg
     | NewSurveyPlease
     | NewRandomSeed Int
     | SurveyOptionsHaveArrived (Result Http.Error SurveyOptionsResponse)
-    | Vote (List SurveyOption) Int
+    | Vote String (List SurveyOption) Int
     | SurveyResultResponseHasArrived (Result Http.Error SurveyResultResponse)
 
 
@@ -88,6 +90,7 @@ update msg model =
                 Ok surveyOptionResults ->
                     ( { model
                         | seed = surveyOptionResults.seed
+                        , surveyName = "Survey " ++ (toString surveyOptionResults.seed)
                         , options = Success (SurveyOptions.loadOptions surveyOptionResults)
                       }
                     , Cmd.none
@@ -95,14 +98,15 @@ update msg model =
 
                 Err boo ->
                     ( { model
-                        | options = Failure boo
+                        | surveyName = "Fallback Kitties"
+                        , options = Success (.options SurveyOptions.kitties)
                       }
                     , Cmd.none
                     )
 
-        Vote options choice ->
+        Vote name options choice ->
             ( { model | chosen = Nothing, summary = Loading }
-            , sendVote ( options, choice )
+            , sendVote ( name, options, choice )
             )
 
         SurveyResultResponseHasArrived (Ok result) ->
@@ -167,7 +171,7 @@ voteButton : Model -> Html Msg
 voteButton model =
     case ( model.chosen, model.options ) of
         ( Just kitteh, Success opts ) ->
-            Html.button [ Html.Events.onClick (Vote opts kitteh) ] [ Html.text "Vote" ]
+            Html.button [ Html.Events.onClick (Vote model.surveyName opts kitteh) ] [ Html.text "Vote" ]
 
         _ ->
             Html.button [ Attr.disabled True ] [ Html.text "Vote" ]
@@ -242,14 +246,14 @@ fetchSurveyOptions ( seed, choices ) =
         Http.send SurveyOptionsHaveArrived request
 
 
-sendVote : ( List SurveyOption, Int ) -> Cmd Msg
-sendVote ( options, choice ) =
+sendVote : ( String, List SurveyOption, Int ) -> Cmd Msg
+sendVote ( name, options, choice ) =
     let
         url =
             sendVoteBaseUrl ++ "/vote"
 
         body =
-            Http.jsonBody (SurveyResult.encodeSurveyResult (SurveyResult options choice))
+            Http.jsonBody (SurveyResult.encodeSurveyResult (SurveyResult name options choice))
 
         request =
             Http.post url body SurveyResult.decodeSurveyResultResponse

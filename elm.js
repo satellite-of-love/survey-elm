@@ -13373,7 +13373,7 @@ var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
 var _satellite_of_love$survey_elm$SurveyOptions$kitties = {
 	seed: 123,
-	count: 3,
+	surveyName: 'Fallback Kitties',
 	options: {
 		ctor: '::',
 		_0: {imageLocation: 'https://c1.staticflickr.com/4/3149/2988746750_4a3dfdee59.jpg', text: 'sink kitties', place: 1},
@@ -13410,13 +13410,13 @@ var _satellite_of_love$survey_elm$SurveyOptions$decodeSurveyOption = A4(
 	A2(_elm_lang$core$Json_Decode$field, 'place', _elm_lang$core$Json_Decode$int));
 var _satellite_of_love$survey_elm$SurveyOptions$SurveyOptionsResponse = F3(
 	function (a, b, c) {
-		return {seed: a, count: b, options: c};
+		return {seed: a, surveyName: b, options: c};
 	});
 var _satellite_of_love$survey_elm$SurveyOptions$decodeSurveyOptionsResponse = A4(
 	_elm_lang$core$Json_Decode$map3,
 	_satellite_of_love$survey_elm$SurveyOptions$SurveyOptionsResponse,
 	A2(_elm_lang$core$Json_Decode$field, 'seed', _elm_lang$core$Json_Decode$int),
-	A2(_elm_lang$core$Json_Decode$field, 'count', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'surveyName', _elm_lang$core$Json_Decode$string),
 	A2(
 		_elm_lang$core$Json_Decode$field,
 		'options',
@@ -13502,7 +13502,7 @@ var _satellite_of_love$survey_elm$SurveyResult$decodeAggregateResult = A3(
 	A2(_elm_lang$core$Json_Decode$field, 'option', _satellite_of_love$survey_elm$SurveyOptions$decodeSurveyOption),
 	A2(_elm_lang$core$Json_Decode$field, 'votes', _elm_lang$core$Json_Decode$int));
 
-var _satellite_of_love$survey_elm$VersionInfo$versionInfo = {version: '1.0.4'};
+var _satellite_of_love$survey_elm$VersionInfo$versionInfo = {version: '1.0.5'};
 var _satellite_of_love$survey_elm$VersionInfo$VersionInfo = function (a) {
 	return {version: a};
 };
@@ -13526,7 +13526,7 @@ var _satellite_of_love$survey_elm$Main$findChoiceText = F2(
 						options))));
 	});
 var _satellite_of_love$survey_elm$Main$sendVoteBaseUrl = 'https://survey.atomist.com/london';
-var _satellite_of_love$survey_elm$Main$surveyOptionsBaseUrl = 'https://survey.atomist.com/woodstock';
+var _satellite_of_love$survey_elm$Main$surveyOptionsBaseUrl = 'https://survey.atomist.com/henley-on-thames';
 var _satellite_of_love$survey_elm$Main$Model = F5(
 	function (a, b, c, d, e) {
 		return {seed: a, surveyName: b, options: c, chosen: d, voteResponse: e};
@@ -14018,7 +14018,7 @@ var _satellite_of_love$survey_elm$Main$main = _elm_lang$html$Html$program(
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _satellite_of_love$survey_elm$Main$main !== 'undefined') {
-    _satellite_of_love$survey_elm$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Main.Msg":{"args":[],"tags":{"NewRandomSeed":["Int"],"NewSurveyPlease":[],"Choose":["Int"],"Vote":["String","List SurveyOptions.SurveyOption","Int"],"SurveyOptionsHaveArrived":["Result.Result Http.Error SurveyOptions.SurveyOptionsResponse"],"Unchoose":[],"Noop":[],"SurveyResultResponseHasArrived":["Result.Result Http.Error SurveyResult.SurveyResultResponse"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"SurveyResult.SurveyResultResponse":{"args":[],"type":"{ surveyName : String, option : SurveyOptions.SurveyOption }"},"SurveyOptions.SurveyOption":{"args":[],"type":"{ imageLocation : String, text : String, place : Int }"},"SurveyOptions.SurveyOptionsResponse":{"args":[],"type":"{ seed : Int , count : Int , options : List SurveyOptions.SurveyOption }"}},"message":"Main.Msg"},"versions":{"elm":"0.18.0"}});
+    _satellite_of_love$survey_elm$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Main.Msg":{"args":[],"tags":{"NewRandomSeed":["Int"],"NewSurveyPlease":[],"Choose":["Int"],"Vote":["String","List SurveyOptions.SurveyOption","Int"],"SurveyOptionsHaveArrived":["Result.Result Http.Error SurveyOptions.SurveyOptionsResponse"],"Unchoose":[],"Noop":[],"SurveyResultResponseHasArrived":["Result.Result Http.Error SurveyResult.SurveyResultResponse"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"SurveyResult.SurveyResultResponse":{"args":[],"type":"{ surveyName : String, option : SurveyOptions.SurveyOption }"},"SurveyOptions.SurveyOption":{"args":[],"type":"{ imageLocation : String, text : String, place : Int }"},"SurveyOptions.SurveyOptionsResponse":{"args":[],"type":"{ seed : Int , surveyName : String , options : List SurveyOptions.SurveyOption }"}},"message":"Main.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])

@@ -8,7 +8,7 @@ type alias SurveyOption =
 
 
 type alias SurveyOptionsResponse =
-    { seed : Int, count : Int, options : List SurveyOption }
+    { seed : Int, surveyName : String, options : List SurveyOption }
 
 
 loadOptions : SurveyOptionsResponse -> List SurveyOption
@@ -19,7 +19,7 @@ loadOptions r =
 kitties : SurveyOptionsResponse
 kitties =
     { seed = 123
-    , count = 3
+    , surveyName = "Fallback Kitties"
     , options =
         [ { imageLocation = "https://c1.staticflickr.com/4/3149/2988746750_4a3dfdee59.jpg"
           , text = "sink kitties"
@@ -41,7 +41,7 @@ decodeSurveyOptionsResponse : Decode.Decoder SurveyOptionsResponse
 decodeSurveyOptionsResponse =
     Decode.map3 SurveyOptionsResponse
         (Decode.field "seed" Decode.int)
-        (Decode.field "count" Decode.int)
+        (Decode.field "surveyName" Decode.string)
         (Decode.field "options" (Decode.list decodeSurveyOption))
 
 

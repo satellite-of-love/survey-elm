@@ -46,6 +46,8 @@ export class BumpVersion implements EditProject {
         let newContent = manifest.content.replace(versionRegex, `"version": ${newVersion}`)
         manifest.setContent(newContent);
 
+        console.log(`Bumping version to ${newVersion}`);
+
         let versionInfoInElm = project.findFile("src/VersionInfo.elm");
         versionInfoInElm.setContent(versionInfoInElm.content.replace(/version = ".*"/, `version = ${newVersion}`));
     }

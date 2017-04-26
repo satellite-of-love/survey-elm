@@ -204,6 +204,13 @@ view model =
                 ]
             , Html.div [] [ voteButton model, newSurveyButton ]
             , Html.div [] [ Html.text voteResponseContent ]
+            , Html.div
+                [ Attr.class "allVotes" ]
+                [ Html.table []
+                    [ Html.tr []
+                        resultTableContent
+                    ]
+                ]
             , Html.hr [] []
             , Html.div [ Attr.class "footer" ] [ Html.a [ Attr.href "https://github.com/satellite-of-love/survey-elm/tree/gh-pages" ] [ Html.text versionInfo.version ] ]
             ]
@@ -292,8 +299,8 @@ fetchAggregatedResults surveyName =
     let
         url =
             aggregatedResultsBaseUrl
-                ++ "/aggregatedResults?name="
-                ++ (toString surveyName)
+                ++ "/aggregatedResults?surveyName="
+                ++ surveyName
 
         request =
             Http.get url AggregatedResult.decodeAggregatedResultResponse

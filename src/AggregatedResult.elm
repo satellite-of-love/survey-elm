@@ -39,6 +39,6 @@ decodeAggregatedResultResponse =
             (Decode.field "survey" (Decode.map justTheSurveyName (Decode.field "surveyName" Decode.string)))
             (Decode.field "results"
                 (Decode.list
-                    (Decode.map2 PlaceAndCount (Decode.field "count" Decode.int) (Decode.field "place" Decode.int))
+                    (Decode.map2 PlaceAndCount (Decode.field "place" Decode.int) (Decode.field "count" Decode.int))
                 )
             )

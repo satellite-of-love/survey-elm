@@ -13562,7 +13562,7 @@ var _satellite_of_love$survey_elm$SurveyResult$decodeSurveyResultResponse = A3(
 	A2(_elm_lang$core$Json_Decode$field, 'surveyName', _elm_lang$core$Json_Decode$string),
 	A2(_elm_lang$core$Json_Decode$field, 'option', _satellite_of_love$survey_elm$SurveyOptions$decodeSurveyOption));
 
-var _satellite_of_love$survey_elm$VersionInfo$versionInfo = {version: '1.0.8'};
+var _satellite_of_love$survey_elm$VersionInfo$versionInfo = {version: '1.0.10'};
 var _satellite_of_love$survey_elm$VersionInfo$VersionInfo = function (a) {
 	return {version: a};
 };
@@ -13588,11 +13588,7 @@ var _satellite_of_love$survey_elm$Main$findChoiceText = F2(
 var _satellite_of_love$survey_elm$Main$drawCount = function (i) {
 	return A2(
 		_elm_lang$html$Html$td,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('vote-count'),
-			_1: {ctor: '[]'}
-		},
+		{ctor: '[]'},
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html$text(
@@ -13603,8 +13599,8 @@ var _satellite_of_love$survey_elm$Main$drawCount = function (i) {
 			_1: {ctor: '[]'}
 		});
 };
-var _satellite_of_love$survey_elm$Main$sendVoteBaseUrl = 'http://localhost:8091';
-var _satellite_of_love$survey_elm$Main$aggregatedResultsBaseUrl = 'http://localhost:8091';
+var _satellite_of_love$survey_elm$Main$aggregatedResultsBaseUrl = 'https://survey.atomist.com/london';
+var _satellite_of_love$survey_elm$Main$sendVoteBaseUrl = 'https://survey.atomist.com/london';
 var _satellite_of_love$survey_elm$Main$surveyOptionsBaseUrl = 'https://survey.atomist.com/kittiesplease';
 var _satellite_of_love$survey_elm$Main$Model = F6(
 	function (a, b, c, d, e, f) {

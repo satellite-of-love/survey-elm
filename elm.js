@@ -13588,7 +13588,11 @@ var _satellite_of_love$survey_elm$Main$findChoiceText = F2(
 var _satellite_of_love$survey_elm$Main$drawCount = function (i) {
 	return A2(
 		_elm_lang$html$Html$td,
-		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('vote-count'),
+			_1: {ctor: '[]'}
+		},
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html$text(

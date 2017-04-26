@@ -1,6 +1,7 @@
-module SurveyOptions exposing (Survey, SurveyOption, loadOptions, decodeSurveyOption, decodeSurveyOptionsResponse, kitties)
+module SurveyOptions exposing (Survey, SurveyOption, loadOptions, decodeSurveyOption, decodeSurvey, kitties, encodeSurvey, encodeSurveyOption)
 
 import Json.Decode as Decode
+import Json.Encode as Encode
 
 
 type alias SurveyOption =
@@ -36,8 +37,8 @@ kitties =
     }
 
 
-decodeSurveyOptionsResponse : Decode.Decoder Survey
-decodeSurveyOptionsResponse =
+decodeSurvey : Decode.Decoder Survey
+decodeSurvey =
     Decode.map2 Survey
         (Decode.field "surveyName" Decode.string)
         (Decode.field "options" (Decode.list decodeSurveyOption))
@@ -49,3 +50,20 @@ decodeSurveyOption =
         (Decode.field "imageLocation" Decode.string)
         (Decode.field "text" Decode.string)
         (Decode.field "place" Decode.int)
+
+
+encodeSurveyOption : SurveyOption -> Encode.Value
+encodeSurveyOption so =
+    Encode.object
+        [ ( "imageLocation", Encode.string so.imageLocation )
+        , ( "place", Encode.int so.place )
+        , ( "text", Encode.string so.text )
+        ]
+
+
+encodeSurvey : Survey -> Encode.Value
+encodeSurvey sr =
+    Encode.object
+        [ ( "surveyName", Encode.string sr.surveyName )
+        , ( "options", Encode.list (List.map encodeSurveyOption sr.options) )
+        ]

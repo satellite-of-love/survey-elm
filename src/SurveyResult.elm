@@ -2,7 +2,7 @@ module SurveyResult exposing (SurveyResult, SurveyResultResponse, decodeSurveyRe
 
 import Json.Encode as Encode
 import Json.Decode as Decode
-import SurveyOptions exposing (SurveyOption)
+import SurveyOptions exposing (SurveyOption, encodeSurveyOption)
 
 
 type alias SurveyResult =
@@ -23,15 +23,6 @@ decodeSurveyResultResponse =
     Decode.map2 SurveyResultResponse
         (Decode.field "surveyName" Decode.string)
         (Decode.field "option" SurveyOptions.decodeSurveyOption)
-
-
-encodeSurveyOption : SurveyOption -> Encode.Value
-encodeSurveyOption so =
-    Encode.object
-        [ ( "imageLocation", Encode.string so.imageLocation )
-        , ( "place", Encode.int so.place )
-        , ( "text", Encode.string so.text )
-        ]
 
 
 encodeSurveyResult : SurveyResult -> Encode.Value

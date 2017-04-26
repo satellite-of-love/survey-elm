@@ -75,7 +75,7 @@ type Msg
     | NewRandomSeed Int
     | SurveyOptionsHaveArrived (Result Http.Error Survey)
     | Vote String (List SurveyOption) Int
-    | SurveyResultResponseHasArrived (Result Http.Error SurveyResultResponse)
+    | SurveyResultResponseHasArrived Survey (Result Http.Error SurveyResultResponse)
     | AggregatedResultHasArrived (Result Http.Error AggregatedResultResponse)
 
 
@@ -128,14 +128,15 @@ update msg model =
             , sendVote ( name, options, choice )
             )
 
-        SurveyResultResponseHasArrived (Ok result) ->
+        SurveyResultResponseHasArrived survey (Ok result) ->
             ( { model | voteResponse = Success result, results = Loading }
-            , fetchAggregatedResults result.surveyName
+            , fetchAggregatedResults survey
             )
 
-        SurveyResultResponseHasArrived (Err boo) ->
+        SurveyResultResponseHasArrived _ (Err boo) ->
             ( { model | voteResponse = Failure boo }, Cmd.none )
 
+        -- bug: these results are only meaningful if the current survey matches the results received
         AggregatedResultHasArrived (Ok result) ->
             ( { model | results = Success result }, Cmd.none )
 
@@ -289,21 +290,22 @@ fetchSurveyOptions seed =
                 ++ (toString seed)
 
         request =
-            Http.get url SurveyOptions.decodeSurveyOptionsResponse
+            Http.get url SurveyOptions.decodeSurvey
     in
         Http.send SurveyOptionsHaveArrived request
 
 
-fetchAggregatedResults : String -> Cmd Msg
-fetchAggregatedResults surveyName =
+fetchAggregatedResults survey =
     let
         url =
             aggregatedResultsBaseUrl
-                ++ "/aggregatedResults?surveyName="
-                ++ surveyName
+                ++ "/aggregatedResults"
+
+        body =
+            Http.jsonBody (SurveyOptions.encodeSurvey survey)
 
         request =
-            Http.get url AggregatedResult.decodeAggregatedResultResponse
+            Http.post url body AggregatedResult.decodeAggregatedResultResponse
     in
         Http.send AggregatedResultHasArrived request
 
@@ -320,4 +322,4 @@ sendVote ( name, options, choice ) =
         request =
             Http.post url body SurveyResult.decodeSurveyResultResponse
     in
-        Http.send SurveyResultResponseHasArrived request
+        Http.send (SurveyResultResponseHasArrived (Survey name options)) request

@@ -149,7 +149,7 @@ view model =
         tableContent =
             case model.options of
                 Success options ->
-                    (List.map (drawKitty model.chosen) options)
+                    (List.map (drawKitty model.chosen) (List.sortBy .place options))
 
                 NotAsked ->
                     [ Html.td [] [ Html.text "Consider clicking 'New Survey'" ] ]

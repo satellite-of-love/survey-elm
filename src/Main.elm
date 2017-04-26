@@ -111,6 +111,7 @@ update msg model =
                         | seed = surveyOptionResults.seed
                         , surveyName = "Survey " ++ (toString surveyOptionResults.seed)
                         , options = Success (SurveyOptions.loadOptions surveyOptionResults)
+                        , results = NotAsked
                       }
                     , Cmd.none
                     )

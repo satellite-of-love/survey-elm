@@ -9,4 +9,4 @@ type alias VersionInfo =
 
 versionInfo : VersionInfo
 versionInfo =
-    { version = "1.0.9" }
+    { version = "1.0.10" }

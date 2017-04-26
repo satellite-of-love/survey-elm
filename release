@@ -45,7 +45,7 @@ git checkout master build
 ./build
 
 # bring output to root
-cp target/* .
+cp -r target/* .
 
 # assert: that made a difference (warning only)
 changes=$(git status --porcelain)

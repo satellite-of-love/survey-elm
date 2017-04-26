@@ -7,6 +7,7 @@ import Random
 import Http
 import SurveyOptions exposing (SurveyOption, SurveyOptionsResponse)
 import SurveyResult exposing (SurveyResult, SurveyResultResponse)
+import AggregatedResult exposing (AggregatedResultResponse)
 import VersionInfo exposing (versionInfo)
 
 
@@ -15,14 +16,22 @@ surveyOptionsBaseUrl =
     "https://survey.atomist.com/philly"
 
 
-sendVoteBaseUrl : String
-sendVoteBaseUrl =
-    "https://survey.atomist.com/london"
 
-
-
+-- sendVoteBaseUrl : String
 -- sendVoteBaseUrl =
---     "http://localhost:8091"
+--     "https://survey.atomist.com/london"
+-- aggregatedResultsBaseUrl : String
+-- aggregatedResultsBaseUrl =
+--     "https://survey.atomist.com/london"
+
+
+aggregatedResultsBaseUrl : String
+aggregatedResultsBaseUrl =
+    "http://localhost:8091"
+
+
+sendVoteBaseUrl =
+    "http://localhost:8091"
 
 
 main : Program Never Model Msg
@@ -65,6 +74,7 @@ type Msg
     | SurveyOptionsHaveArrived (Result Http.Error SurveyOptionsResponse)
     | Vote String (List SurveyOption) Int
     | SurveyResultResponseHasArrived (Result Http.Error SurveyResultResponse)
+    | AggregatedResultHasArrived (Result Http.Error AggregatedResultResponse)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -121,6 +131,12 @@ update msg model =
 
         SurveyResultResponseHasArrived (Err boo) ->
             ( { model | voteResponse = Failure boo }, Cmd.none )
+
+        AggregatedResultHasArrived (Ok result) ->
+            ( model, Cmd.none )
+
+        AggregatedResultHasArrived (Err boo) ->
+            ( model, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -227,12 +243,6 @@ findChoiceText options place =
         |> Maybe.withDefault "WAT"
 
 
-
---- HTTP
--- surveyOptionsBaseUrl =
---     "https://survey.atomist.com/survey-options"
-
-
 type RemoteData e a
     = NotAsked
     | Loading
@@ -252,6 +262,20 @@ fetchSurveyOptions seed =
             Http.get url SurveyOptions.decodeSurveyOptionsResponse
     in
         Http.send SurveyOptionsHaveArrived request
+
+
+fetchAggregatedResults : String -> Cmd Msg
+fetchAggregatedResults surveyName =
+    let
+        url =
+            aggregatedResultsBaseUrl
+                ++ "/aggregatedResults?name="
+                ++ (toString surveyName)
+
+        request =
+            Http.get url AggregatedResult.decodeAggregatedResultResponse
+    in
+        Http.send AggregatedResultHasArrived request
 
 
 sendVote : ( String, List SurveyOption, Int ) -> Cmd Msg

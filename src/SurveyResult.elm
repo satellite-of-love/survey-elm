@@ -18,17 +18,6 @@ type alias SurveyResultResponse =
     }
 
 
-type alias AggregateResult =
-    { option : SurveyOption
-    , votes : Int
-    }
-
-
-decodeAggregateResult : Decode.Decoder AggregateResult
-decodeAggregateResult =
-    Decode.map2 AggregateResult (Decode.field "option" SurveyOptions.decodeSurveyOption) (Decode.field "votes" Decode.int)
-
-
 decodeSurveyResultResponse : Decode.Decoder SurveyResultResponse
 decodeSurveyResultResponse =
     Decode.map2 SurveyResultResponse

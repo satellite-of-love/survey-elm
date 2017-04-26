@@ -16,22 +16,22 @@ surveyOptionsBaseUrl =
     "https://survey.atomist.com/kittiesplease"
 
 
-
--- sendVoteBaseUrl : String
--- sendVoteBaseUrl =
---     "https://survey.atomist.com/london"
--- aggregatedResultsBaseUrl : String
--- aggregatedResultsBaseUrl =
---     "https://survey.atomist.com/london"
+sendVoteBaseUrl : String
+sendVoteBaseUrl =
+    "https://survey.atomist.com/london"
 
 
 aggregatedResultsBaseUrl : String
 aggregatedResultsBaseUrl =
-    "http://localhost:8091"
+    "https://survey.atomist.com/london"
 
 
-sendVoteBaseUrl =
-    "http://localhost:8091"
+
+-- aggregatedResultsBaseUrl : String
+-- aggregatedResultsBaseUrl =
+--     "http://localhost:8091"
+-- sendVoteBaseUrl =
+--     "http://localhost:8091"
 
 
 main : Program Never Model Msg

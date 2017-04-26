@@ -5,24 +5,33 @@ import Html.Attributes as Attr
 import Html.Events
 import Random
 import Http
-import SurveyOptions exposing (SurveyOption, SurveyOptionsResponse)
+import SurveyOptions exposing (SurveyOption, Survey)
 import SurveyResult exposing (SurveyResult, SurveyResultResponse)
+import AggregatedResult exposing (AggregatedResultResponse)
 import VersionInfo exposing (versionInfo)
 
 
 surveyOptionsBaseUrl : String
 surveyOptionsBaseUrl =
-    "https://survey.atomist.com/philly"
-
-
-sendVoteBaseUrl : String
-sendVoteBaseUrl =
-    "https://survey.atomist.com/london"
+    "https://survey.atomist.com/kittiesplease"
 
 
 
+-- sendVoteBaseUrl : String
 -- sendVoteBaseUrl =
---     "http://localhost:8091"
+--     "https://survey.atomist.com/london"
+-- aggregatedResultsBaseUrl : String
+-- aggregatedResultsBaseUrl =
+--     "https://survey.atomist.com/london"
+
+
+aggregatedResultsBaseUrl : String
+aggregatedResultsBaseUrl =
+    "http://localhost:8091"
+
+
+sendVoteBaseUrl =
+    "http://localhost:8091"
 
 
 main : Program Never Model Msg
@@ -41,6 +50,7 @@ type alias Model =
     , options : RemoteData Http.Error (List SurveyOption)
     , chosen : Maybe Int
     , voteResponse : RemoteData Http.Error SurveyResultResponse
+    , results : RemoteData Http.Error AggregatedResultResponse
     }
 
 
@@ -51,6 +61,7 @@ init =
       , options = Loading
       , chosen = Nothing
       , voteResponse = NotAsked
+      , results = NotAsked
       }
     , fetchSurveyOptions 1
     )
@@ -62,9 +73,10 @@ type Msg
     | Unchoose
     | NewSurveyPlease
     | NewRandomSeed Int
-    | SurveyOptionsHaveArrived (Result Http.Error SurveyOptionsResponse)
+    | SurveyOptionsHaveArrived (Result Http.Error Survey)
     | Vote String (List SurveyOption) Int
-    | SurveyResultResponseHasArrived (Result Http.Error SurveyResultResponse)
+    | SurveyResultResponseHasArrived Survey (Result Http.Error SurveyResultResponse)
+    | AggregatedResultHasArrived (Result Http.Error AggregatedResultResponse)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -94,11 +106,11 @@ update msg model =
 
         SurveyOptionsHaveArrived result ->
             case result of
-                Ok surveyOptionResults ->
+                Ok survey ->
                     ( { model
-                        | seed = surveyOptionResults.seed
-                        , surveyName = "Survey " ++ (toString surveyOptionResults.seed)
-                        , options = Success (SurveyOptions.loadOptions surveyOptionResults)
+                        | surveyName = survey.surveyName
+                        , options = Success (SurveyOptions.loadOptions survey)
+                        , results = NotAsked
                       }
                     , Cmd.none
                     )
@@ -116,11 +128,20 @@ update msg model =
             , sendVote ( name, options, choice )
             )
 
-        SurveyResultResponseHasArrived (Ok result) ->
-            ( { model | voteResponse = Success result }, Cmd.none )
+        SurveyResultResponseHasArrived survey (Ok result) ->
+            ( { model | voteResponse = Success result, results = Loading }
+            , fetchAggregatedResults survey
+            )
 
-        SurveyResultResponseHasArrived (Err boo) ->
+        SurveyResultResponseHasArrived _ (Err boo) ->
             ( { model | voteResponse = Failure boo }, Cmd.none )
+
+        -- bug: these results are only meaningful if the current survey matches the results received
+        AggregatedResultHasArrived (Ok result) ->
+            ( { model | results = Success result }, Cmd.none )
+
+        AggregatedResultHasArrived (Err boo) ->
+            ( { model | results = Failure boo }, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -129,7 +150,7 @@ view model =
         tableContent =
             case model.options of
                 Success options ->
-                    (List.map (drawKitty model.chosen) options)
+                    (List.map (drawKitty model.chosen) (List.sortBy .place options))
 
                 NotAsked ->
                     [ Html.td [] [ Html.text "Consider clicking 'New Survey'" ] ]
@@ -153,6 +174,20 @@ view model =
 
                 Failure boo ->
                     "Boo! Failure! " ++ (toString boo)
+
+        resultTableContent =
+            case model.results of
+                Success arr ->
+                    (List.map drawCount (AggregatedResult.orderedCounts arr))
+
+                NotAsked ->
+                    [ Html.td [] [] ]
+
+                Loading ->
+                    [ Html.td [] [ Html.text "Wait for it ... " ] ]
+
+                Failure boo ->
+                    [ Html.td [] [ Html.text ("Failure !!" ++ (toString boo)) ] ]
     in
         Html.div
             []
@@ -170,6 +205,13 @@ view model =
                 ]
             , Html.div [] [ voteButton model, newSurveyButton ]
             , Html.div [] [ Html.text voteResponseContent ]
+            , Html.div
+                [ Attr.class "allVotes" ]
+                [ Html.table []
+                    [ Html.tr []
+                        resultTableContent
+                    ]
+                ]
             , Html.hr [] []
             , Html.div [ Attr.class "footer" ] [ Html.a [ Attr.href "https://github.com/satellite-of-love/survey-elm/tree/gh-pages" ] [ Html.text versionInfo.version ] ]
             ]
@@ -188,6 +230,11 @@ voteButton model =
 newSurveyButton : Html Msg
 newSurveyButton =
     Html.button [ Html.Events.onClick NewSurveyPlease ] [ Html.text "New Survey" ]
+
+
+drawCount : Int -> Html Msg
+drawCount i =
+    Html.td [ Attr.class "vote-count" ] [ Html.text ((toString i) ++ " votes") ]
 
 
 drawKitty : Maybe Int -> SurveyOption -> Html Msg
@@ -227,12 +274,6 @@ findChoiceText options place =
         |> Maybe.withDefault "WAT"
 
 
-
---- HTTP
--- surveyOptionsBaseUrl =
---     "https://survey.atomist.com/survey-options"
-
-
 type RemoteData e a
     = NotAsked
     | Loading
@@ -249,9 +290,24 @@ fetchSurveyOptions seed =
                 ++ (toString seed)
 
         request =
-            Http.get url SurveyOptions.decodeSurveyOptionsResponse
+            Http.get url SurveyOptions.decodeSurvey
     in
         Http.send SurveyOptionsHaveArrived request
+
+
+fetchAggregatedResults survey =
+    let
+        url =
+            aggregatedResultsBaseUrl
+                ++ "/aggregatedResults"
+
+        body =
+            Http.jsonBody (SurveyOptions.encodeSurvey survey)
+
+        request =
+            Http.post url body AggregatedResult.decodeAggregatedResultResponse
+    in
+        Http.send AggregatedResultHasArrived request
 
 
 sendVote : ( String, List SurveyOption, Int ) -> Cmd Msg
@@ -266,4 +322,4 @@ sendVote ( name, options, choice ) =
         request =
             Http.post url body SurveyResult.decodeSurveyResultResponse
     in
-        Http.send SurveyResultResponseHasArrived request
+        Http.send (SurveyResultResponseHasArrived (Survey name options)) request

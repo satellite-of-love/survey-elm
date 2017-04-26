@@ -1,4 +1,4 @@
-module AggregatedResult exposing (AggregatedResultResponse, decodeAggregatedResultResponse)
+module AggregatedResult exposing (AggregatedResultResponse, decodeAggregatedResultResponse, orderedCounts)
 
 import Json.Decode as Decode
 
@@ -15,6 +15,18 @@ type alias AggregatedResultResponse =
     { survey : { surveyName : String }
     , results : List ( Place, Count )
     }
+
+
+orderedCounts : AggregatedResultResponse -> List Count
+orderedCounts arr =
+    let
+        first ( a, _ ) =
+            a
+
+        second ( _, b ) =
+            b
+    in
+        List.sortBy first arr.results |> List.map second
 
 
 decodeAggregatedResultResponse : Decode.Decoder AggregatedResultResponse

@@ -50,6 +50,7 @@ type alias Model =
     , options : RemoteData Http.Error (List SurveyOption)
     , chosen : Maybe Int
     , voteResponse : RemoteData Http.Error SurveyResultResponse
+    , results : RemoteData Http.Error AggregatedResultResponse
     }
 
 
@@ -60,6 +61,7 @@ init =
       , options = Loading
       , chosen = Nothing
       , voteResponse = NotAsked
+      , results = NotAsked
       }
     , fetchSurveyOptions 1
     )
@@ -127,16 +129,18 @@ update msg model =
             )
 
         SurveyResultResponseHasArrived (Ok result) ->
-            ( { model | voteResponse = Success result }, Cmd.none )
+            ( { model | voteResponse = Success result, results = Loading }
+            , fetchAggregatedResults result.surveyName
+            )
 
         SurveyResultResponseHasArrived (Err boo) ->
             ( { model | voteResponse = Failure boo }, Cmd.none )
 
         AggregatedResultHasArrived (Ok result) ->
-            ( model, Cmd.none )
+            ( { model | results = Success result }, Cmd.none )
 
         AggregatedResultHasArrived (Err boo) ->
-            ( model, Cmd.none )
+            ( { model | results = Failure boo }, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -169,6 +173,20 @@ view model =
 
                 Failure boo ->
                     "Boo! Failure! " ++ (toString boo)
+
+        resultTableContent =
+            case model.results of
+                Success arr ->
+                    (List.map drawCount (AggregatedResult.orderedCounts arr))
+
+                NotAsked ->
+                    [ Html.td [] [] ]
+
+                Loading ->
+                    [ Html.td [] [ Html.text "Wait for it ... " ] ]
+
+                Failure boo ->
+                    [ Html.td [] [ Html.text ("Failure !!" ++ (toString boo)) ] ]
     in
         Html.div
             []
@@ -204,6 +222,11 @@ voteButton model =
 newSurveyButton : Html Msg
 newSurveyButton =
     Html.button [ Html.Events.onClick NewSurveyPlease ] [ Html.text "New Survey" ]
+
+
+drawCount : Int -> Html Msg
+drawCount i =
+    Html.td [] [ Html.text ((toString i) ++ " votes") ]
 
 
 drawKitty : Maybe Int -> SurveyOption -> Html Msg

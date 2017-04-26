@@ -21,16 +21,16 @@ kitties =
     { seed = 123
     , surveyName = "Fallback Kitties"
     , options =
-        [ { imageLocation = "https://c1.staticflickr.com/4/3149/2988746750_4a3dfdee59.jpg"
-          , text = "sink kitties"
+        [ { imageLocation = "images/kitty1.jpg"
+          , text = "Loki standing"
           , place = 1
           }
-        , { imageLocation = "http://maxpixel.freegreatpicture.com/static/photo/1x/Sweet-Animals-Kitty-Cat-323262.jpg"
-          , text = "kitty licking paw"
+        , { imageLocation = "images/kitty2.jpg"
+          , text = "Grimm standing"
           , place = 3
           }
-        , { imageLocation = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Computer-kitten.jpg/1024px-Computer-kitten.jpg"
-          , text = "computer kitten"
+        , { imageLocation = "images/kitty4.jpg"
+          , text = "cuddling kitties"
           , place = 2
           }
         ]

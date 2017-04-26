@@ -5,7 +5,7 @@ import Html.Attributes as Attr
 import Html.Events
 import Random
 import Http
-import SurveyOptions exposing (SurveyOption, SurveyOptionsResponse)
+import SurveyOptions exposing (SurveyOption, Survey)
 import SurveyResult exposing (SurveyResult, SurveyResultResponse)
 import AggregatedResult exposing (AggregatedResultResponse)
 import VersionInfo exposing (versionInfo)
@@ -73,7 +73,7 @@ type Msg
     | Unchoose
     | NewSurveyPlease
     | NewRandomSeed Int
-    | SurveyOptionsHaveArrived (Result Http.Error SurveyOptionsResponse)
+    | SurveyOptionsHaveArrived (Result Http.Error Survey)
     | Vote String (List SurveyOption) Int
     | SurveyResultResponseHasArrived (Result Http.Error SurveyResultResponse)
     | AggregatedResultHasArrived (Result Http.Error AggregatedResultResponse)
@@ -106,11 +106,10 @@ update msg model =
 
         SurveyOptionsHaveArrived result ->
             case result of
-                Ok surveyOptionResults ->
+                Ok survey ->
                     ( { model
-                        | seed = surveyOptionResults.seed
-                        , surveyName = "Survey " ++ (toString surveyOptionResults.seed)
-                        , options = Success (SurveyOptions.loadOptions surveyOptionResults)
+                        | surveyName = survey.surveyName
+                        , options = Success (SurveyOptions.loadOptions survey)
                         , results = NotAsked
                       }
                     , Cmd.none

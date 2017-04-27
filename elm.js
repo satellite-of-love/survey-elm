@@ -13562,7 +13562,7 @@ var _satellite_of_love$survey_elm$SurveyResult$decodeSurveyResultResponse = A3(
 	A2(_elm_lang$core$Json_Decode$field, 'surveyName', _elm_lang$core$Json_Decode$string),
 	A2(_elm_lang$core$Json_Decode$field, 'option', _satellite_of_love$survey_elm$SurveyOptions$decodeSurveyOption));
 
-var _satellite_of_love$survey_elm$VersionInfo$versionInfo = {version: '1.0.10'};
+var _satellite_of_love$survey_elm$VersionInfo$versionInfo = {version: '1.0.12'};
 var _satellite_of_love$survey_elm$VersionInfo$VersionInfo = function (a) {
 	return {version: a};
 };
@@ -13588,14 +13588,18 @@ var _satellite_of_love$survey_elm$Main$findChoiceText = F2(
 var _satellite_of_love$survey_elm$Main$drawCount = function (i) {
 	return A2(
 		_elm_lang$html$Html$td,
-		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('vote-count'),
+			_1: {ctor: '[]'}
+		},
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html$text(
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					_elm_lang$core$Basics$toString(i),
-					' votes')),
+					' votes so far')),
 			_1: {ctor: '[]'}
 		});
 };

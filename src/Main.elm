@@ -233,7 +233,7 @@ newSurveyButton =
 
 
 drawCount : Int -> Html Msg
-drawCount i =x`
+drawCount i =
     Html.td [ Attr.class "vote-count" ] [ Html.text ((toString i) ++ " votes so far") ]
 
 

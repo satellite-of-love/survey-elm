@@ -22,7 +22,8 @@ td.kitty {
     border: solid thick grey;
 }
 
-td.count {
+td.vote-count {
+    text-align: center;
     height: 10vh;
     border: solid thick grey;
 }

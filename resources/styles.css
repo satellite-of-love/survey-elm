@@ -15,10 +15,15 @@ button {
     margin: 10px;
 }
 
-td {
+td.kitty {
     background: no-repeat center/90%;
     height: 50vh;
     /* transition: all 1s ease; <- this is not an improvement */
+    border: solid thick grey;
+}
+
+td.count {
+    height: 10vh;
     border: solid thick grey;
 }
 

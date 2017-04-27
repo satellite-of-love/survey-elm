@@ -286,7 +286,7 @@ fetchSurveyOptions seed =
     let
         url =
             surveyOptionsBaseUrl
-                ++ "/surveyOptions?seed="
+                ++ "/survey?seed="
                 ++ (toString seed)
 
         request =

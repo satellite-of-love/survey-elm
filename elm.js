@@ -13562,7 +13562,7 @@ var _satellite_of_love$survey_elm$SurveyResult$decodeSurveyResultResponse = A3(
 	A2(_elm_lang$core$Json_Decode$field, 'surveyName', _elm_lang$core$Json_Decode$string),
 	A2(_elm_lang$core$Json_Decode$field, 'option', _satellite_of_love$survey_elm$SurveyOptions$decodeSurveyOption));
 
-var _satellite_of_love$survey_elm$VersionInfo$versionInfo = {version: '1.0.12'};
+var _satellite_of_love$survey_elm$VersionInfo$versionInfo = {version: '1.0.13'};
 var _satellite_of_love$survey_elm$VersionInfo$VersionInfo = function (a) {
 	return {version: a};
 };
@@ -13683,7 +13683,7 @@ var _satellite_of_love$survey_elm$Main$fetchSurveyOptions = function (seed) {
 		_satellite_of_love$survey_elm$Main$surveyOptionsBaseUrl,
 		A2(
 			_elm_lang$core$Basics_ops['++'],
-			'/surveyOptions?seed=',
+			'/survey?seed=',
 			_elm_lang$core$Basics$toString(seed)));
 	var request = A2(_elm_lang$http$Http$get, url, _satellite_of_love$survey_elm$SurveyOptions$decodeSurvey);
 	return A2(_elm_lang$http$Http$send, _satellite_of_love$survey_elm$Main$SurveyOptionsHaveArrived, request);

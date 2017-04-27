@@ -13562,7 +13562,7 @@ var _satellite_of_love$survey_elm$SurveyResult$decodeSurveyResultResponse = A3(
 	A2(_elm_lang$core$Json_Decode$field, 'surveyName', _elm_lang$core$Json_Decode$string),
 	A2(_elm_lang$core$Json_Decode$field, 'option', _satellite_of_love$survey_elm$SurveyOptions$decodeSurveyOption));
 
-var _satellite_of_love$survey_elm$VersionInfo$versionInfo = {version: '1.0.13'};
+var _satellite_of_love$survey_elm$VersionInfo$versionInfo = {version: '1.0.14'};
 var _satellite_of_love$survey_elm$VersionInfo$VersionInfo = function (a) {
 	return {version: a};
 };

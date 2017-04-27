@@ -36,7 +36,7 @@ td.vote-count {
     float: left;
 }
 
-.chosen {
+td.chosen {
     background-color: lightgreen;
     border: solid thick green;
 }

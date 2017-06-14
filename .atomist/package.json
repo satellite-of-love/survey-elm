@@ -1,8 +1,23 @@
 {
   "dependencies": {
-    "@atomist/rugs": "^0.24.0"
+    "@atomist/rugs": "^1.0.0-m.5"
   },
   "scripts": {
     "test": "rug test"
+  },
+  "name": "@local/survey-elm",
+  "version": "0.1.0",
+  "author": "local",
+  "description": "Atomist Rugs from local/survey-elm",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/local/survey-elm.git"
+  },
+  "homepage": "https://github.com/local/survey-elm#readme",
+  "bugs": {
+    "url": "https://github.com/local/survey-elm/issues"
+  },
+  "atomist": {
+    "requires": "[1.0.0-m.4,2.0.0)"
   }
 }

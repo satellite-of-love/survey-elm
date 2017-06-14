@@ -254,3 +254,19 @@ editor:
     branch: "master"
     sha: "a753875"
 
+---
+kind: "operation"
+client: "com.atomist:rug"
+version: "1.0.1-JESS"
+editor:
+  name: "BumpVersion"
+  group: "local"
+  artifact: "survey-elm"
+  version: "0.1.0"
+  origin:
+    repo: "git@github.com:satellite-of-love/survey-elm.git"
+    branch: "master"
+    sha: "dc50e57"
+  parameters:
+    - "component": "patch"
+

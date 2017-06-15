@@ -13,7 +13,7 @@ import VersionInfo exposing (versionInfo)
 
 surveyOptionsBaseUrl : String
 surveyOptionsBaseUrl =
-    "https://survey.atomist.com/gotoams"
+    "https://survey.atomist.com/ndcoslo"
 
 
 sendVoteBaseUrl : String

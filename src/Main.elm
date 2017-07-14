@@ -18,12 +18,12 @@ surveyOptionsBaseUrl =
 
 sendVoteBaseUrl : String
 sendVoteBaseUrl =
-    "https://survey.atomist.com/london"
+    "https://london.cfapps.io"
 
 
 aggregatedResultsBaseUrl : String
 aggregatedResultsBaseUrl =
-    "https://survey.atomist.com/london"
+    "https://london.cfapps.io"
 
 
 
